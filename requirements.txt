@@ -1,0 +1,2 @@
+# This static portfolio currently uses Python only for local preview serving.
+# No external Python packages are required.

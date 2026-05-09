@@ -1,24 +1,23 @@
-# 💫 About Me:
-Research Officer at MIMOS Berhad<br>Intelligent Systems Engineering Graduate<br><br>I specialize in building end-to-end AI pipelines, focusing on Generative AI, Large Language Models (LLMs), and Computer Vision. Currently, I'm deep-diving into model optimization and RAG agent architectures.<br><br>Tech Stack:<br><br>Languages: Python (Advanced: NumPy, Pandas, OpenCV)<br><br>AI/ML: Deep Learning, Object Detection, Model Optimization<br><br>Tools: WSL2, Docker (Pending), VS Code, Jupyter<br><br>Current Projects: OCR Fine-tuning, RAG Chatbot implementations<br><br>Connect with me: www.linkedin.com/in/mawardi-rosli-04b299334
+# Mawardi Rosli Portfolio
 
+A minimalist AI/ML portfolio landing page with responsive layout, animated section reveals, an interactive neural-field hero visual, project cards, social links, and a Spotify playlist area.
 
-## 🌐 Socials:
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://linkedin.com/in/www.linkedin.com/in/mawardi-rosli-04b299334) 
+## Preview
 
-# 💻 Tech Stack:
-![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![MicrosoftSQLServer](https://img.shields.io/badge/Microsoft%20SQL%20Server-CC2927?style=for-the-badge&logo=microsoft%20sql%20server&logoColor=white) ![Keras](https://img.shields.io/badge/Keras-%23D00000.svg?style=for-the-badge&logo=Keras&logoColor=white) ![Matplotlib](https://img.shields.io/badge/Matplotlib-%23ffffff.svg?style=for-the-badge&logo=Matplotlib&logoColor=black) ![Pandas](https://img.shields.io/badge/pandas-%23150458.svg?style=for-the-badge&logo=pandas&logoColor=white) ![scikit-learn](https://img.shields.io/badge/scikit--learn-%23F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white) ![GitLab CI](https://img.shields.io/badge/gitlab%20CI-%23181717.svg?style=for-the-badge&logo=gitlab&logoColor=white) ![GitLab](https://img.shields.io/badge/gitlab-%23181717.svg?style=for-the-badge&logo=gitlab&logoColor=white) ![ElasticSearch](https://img.shields.io/badge/-ElasticSearch-005571?style=for-the-badge&logo=elasticsearch) ![Canva](https://img.shields.io/badge/Canva-%2300C4CC.svg?style=for-the-badge&logo=Canva&logoColor=white) ![Figma](https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white) ![Flask](https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white) ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi) ![Elasticsearch](https://img.shields.io/badge/elasticsearch-%230377CC.svg?style=for-the-badge&logo=elasticsearch&logoColor=white) ![nVIDIA](https://img.shields.io/badge/cuda-000000.svg?style=for-the-badge&logo=nVIDIA&logoColor=green) ![OpenCV](https://img.shields.io/badge/opencv-%23white.svg?style=for-the-badge&logo=opencv&logoColor=white) ![Streamlit](https://img.shields.io/badge/Streamlit-%23FE4B4B.svg?style=for-the-badge&logo=streamlit&logoColor=white) ![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white) ![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white) ![GitLab CI](https://img.shields.io/badge/gitlab%20CI-%23181717.svg?style=for-the-badge&logo=gitlab&logoColor=white) ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white) ![Power Bi](https://img.shields.io/badge/power_bi-F2C811?style=for-the-badge&logo=powerbi&logoColor=black) ![NumPy](https://img.shields.io/badge/numpy-%23013243.svg?style=for-the-badge&logo=numpy&logoColor=white) ![Scipy](https://img.shields.io/badge/SciPy-%230C55A5.svg?style=for-the-badge&logo=scipy&logoColor=%white) ![TensorFlow](https://img.shields.io/badge/TensorFlow-%23FF6F00.svg?style=for-the-badge&logo=TensorFlow&logoColor=white)
-# 📊 GitHub Stats:
-![](https://github-readme-stats.shion.dev/api?username=mawardii&theme=nightowl&hide_border=false&include_all_commits=true&count_private=true)<br/>
-![](https://streak-stats.demolab.com/?user=mawardii&theme=nightowl&hide_border=false)<br/>
-![](https://github-readme-stats.shion.dev/api/top-langs/?username=mawardii&theme=nightowl&hide_border=false&include_all_commits=true&count_private=true&layout=compact)
+Open `index.html` in a browser, or use the local preview server at `http://127.0.0.1:5173/`. React is vendored locally; internet access is only needed for the Spotify embed.
 
-## 🏆 GitHub Trophies
-![](https://github-profile-trophy.vercel.app/?username=mawardii&theme=radical&no-frame=false&no-bg=true&margin-w=4)
+This first version uses no build step because Node.js is not installed on the current machine. It still uses React, but through local browser scripts in `vendor/` so it can be opened immediately while the design direction is being shaped.
 
-### ✍️ Random Dev Quote
-![](https://quotes-github-readme.vercel.app/api?type=horizontal&theme=radical)
+## Sections
 
----
-[![](https://komarev.com/ghpvc/?username=mawardii&icon=0&color=0)](https://visitcount.itsvg.in)
+- About
+- Current interests in Generative AI, RAG, computer vision, and model optimization
+- Education
+- Experience
+- Projects
+- Music / Spotify
+- Social links
 
-<!-- Proudly created with GPRM ( https://gprm.itsvg.in ) -->
+## Next Setup Step
+
+Install Node.js LTS when you are ready to move this into a standard Vite + React workflow.
