@@ -4,94 +4,101 @@
 
   const profile = {
     name: "Mawardi Rosli",
-    role: "AI/ML Research Officer",
+    title: "AI/ML Research Officer",
     location: "Malaysia",
-    statement: "Beyond Notebooks.",
+    hero:
+      "Building calm interfaces for intelligent systems.",
     intro:
-      "I design applied AI systems that move from research experiments into usable workflows across GenAI, RAG, OCR, computer vision, and model optimization.",
-    insight:
-      "Research Officer at MIMOS Berhad and Intelligent Systems Engineering graduate, currently focused on systems that make model behavior easier to retrieve, evaluate, and deploy.",
-    socials: [
+      "I work on end-to-end AI pipelines across Generative AI, RAG, OCR, computer vision, and model optimization. My goal is to turn experimental notebooks into usable, evaluated workflows.",
+    emailPlaceholder: "Write a note about GenAI, RAG, OCR, or anything worth building...",
+    spotify:
+      "https://open.spotify.com/embed/playlist/1w3FcOORBfn6fLcfU2rwV3?utm_source=generator",
+    links: [
       ["LinkedIn", "https://www.linkedin.com/in/mawardi-rosli-04b299334"],
       ["GitHub", "https://github.com/mawardii"],
     ],
   };
 
-  const navItems = [
-    ["01", "AI/ML", "#overview"],
-    ["02", "Neural", "#approach"],
-    ["03", "Programs", "#projects"],
-    ["04", "Updates", "#progress"],
-    ["05", "Contact", "#contact"],
+  const nav = [
+    ["01", "About", "#about"],
+    ["02", "Experience", "#experience"],
+    ["03", "Projects", "#projects"],
+    ["04", "Contact", "#contact"],
   ];
 
-  const focusAreas = [
-    ["RAG Agents", "Grounded retrieval loops for document-heavy workflows."],
-    ["OCR Lab", "Fine-tuning and evaluation for visual text pipelines."],
-    ["Model Ops", "Optimization work for faster, cleaner deployment paths."],
+  const aboutCards = [
+    {
+      eyebrow: "Current Focus",
+      title: "GenAI systems, RAG agents, OCR pipelines.",
+      body: "Researching how retrieval, visual text extraction, and model behavior can become more reliable in real workflows.",
+      size: "bento-large",
+    },
+    {
+      eyebrow: "Profile",
+      title: "Research Officer",
+      body: "MIMOS Berhad",
+      size: "bento-small",
+    },
+    {
+      eyebrow: "Education",
+      title: "Intelligent Systems Engineering",
+      body: "Graduate foundation in AI, automation, data systems, and applied engineering.",
+      size: "bento-tall",
+    },
+    {
+      eyebrow: "Method",
+      title: "Prototype. Evaluate. Refine. Ship.",
+      body: "I like clean systems, measured iteration, and interfaces that make complex models feel manageable.",
+      size: "bento-wide",
+    },
   ];
 
-  const overview = [
-    ["0.1 Our Mission", "Turn AI prototypes into systems that people can actually use."],
-    ["0.2 Our Vision", "Build calm interfaces around complex intelligence."],
-    ["0.3 Our Ambition", "Make GenAI workflows easier to evaluate, trust, and ship."],
-    ["Industries", "Research, automation, document intelligence, visual AI."],
-    ["Core Business", "Applied AI engineering and end-to-end model pipelines."],
-    ["Domain", "mawardi.dev"],
-  ];
-
-  const language = [
-    ["RAG", "Retrieval Augmented Generation"],
-    ["OCR", "Optical Character Recognition"],
-    ["MLOps", "Model workflow and deployment discipline"],
+  const experience = [
+    {
+      date: "Present",
+      role: "Research Officer",
+      org: "MIMOS Berhad",
+      body: "Applied AI research across LLM workflows, computer vision, and end-to-end pipeline development.",
+    },
+    {
+      date: "Current",
+      role: "RAG / OCR Builder",
+      org: "Independent Projects",
+      body: "Building retrieval assistants, OCR fine-tuning workflows, and evaluation loops for document intelligence.",
+    },
+    {
+      date: "Foundation",
+      role: "Intelligent Systems Engineering",
+      org: "Graduate",
+      body: "Technical grounding in AI systems, data processing, and software architecture.",
+    },
   ];
 
   const projects = [
     {
       number: "01",
       title: "OCR Fine-tuning",
-      label: "Computer Vision",
-      body:
-        "Improving text extraction pipelines with better data handling, evaluation, and domain-aware model tuning.",
+      type: "Computer Vision",
+      body: "A visual text pipeline focused on domain-specific extraction, model evaluation, and cleaner downstream structure.",
+      visual: "visual-ocr",
     },
     {
       number: "02",
       title: "RAG Chatbot Implementations",
-      label: "LLM Systems",
-      body:
-        "Designing grounded assistants that connect documents, retrieval, memory, and answer generation.",
+      type: "LLM Systems",
+      body: "Retrieval-augmented assistants that connect documents, ranking, grounding, and response generation.",
+      visual: "visual-rag",
     },
     {
       number: "03",
-      title: "Optimization Lab",
-      label: "Inference",
-      body:
-        "Exploring lighter model workflows, practical benchmarking, and deployment-minded iteration.",
+      title: "Model Optimization Lab",
+      type: "Inference",
+      body: "Experiments around lighter inference, benchmarking, and deployment-minded model iteration.",
+      visual: "visual-opt",
     },
   ];
 
-  const progress = [
-    {
-      number: "1.0",
-      title: "Scientific Evidence",
-      body: "A research foundation in Intelligent Systems Engineering, AI pipelines, and data-driven iteration.",
-      action: "Education",
-    },
-    {
-      number: "2.0",
-      title: "Driven by Practice",
-      body: "Current work as a Research Officer translating experiments into applied AI workflows.",
-      action: "Experience",
-    },
-    {
-      number: "3.0",
-      title: "Get in Touch",
-      body: "Open to conversations around GenAI systems, OCR, RAG, model optimization, and research engineering.",
-      action: "Social",
-    },
-  ];
-
-  const tech = [
+  const stack = [
     "Python",
     "NumPy",
     "Pandas",
@@ -100,210 +107,144 @@
     "RAG",
     "Deep Learning",
     "FastAPI",
+    "Flask",
     "Docker",
     "PostgreSQL",
     "Jupyter",
-    "WSL2",
   ];
 
-  const spotify = {
-    title: "Current Rotation",
-    embedUrl:
-      "https://open.spotify.com/embed/playlist/1w3FcOORBfn6fLcfU2rwV3?utm_source=generator",
-  };
-
-  function IconArrow() {
+  function Arrow() {
     return h("span", { className: "arrow", "aria-hidden": "true" }, "->");
   }
 
-  function RevealObserver() {
+  function RevealRuntime() {
     useEffect(() => {
-      const items = document.querySelectorAll("[data-reveal]");
+      const elements = document.querySelectorAll("[data-reveal]");
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("is-visible");
-              observer.unobserve(entry.target);
-            }
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
           });
         },
-        { rootMargin: "0px 0px -12% 0px", threshold: 0.16 }
+        { threshold: 0.16, rootMargin: "0px 0px -10% 0px" }
       );
 
-      items.forEach((item) => observer.observe(item));
+      elements.forEach((element, index) => {
+        element.style.setProperty("--reveal-delay", `${Math.min(index % 8, 7) * 70}ms`);
+        observer.observe(element);
+      });
+
       return () => observer.disconnect();
     }, []);
 
     return null;
   }
 
-  function ScrollRuntime() {
+  function SmoothScrollRuntime() {
     useEffect(() => {
-      const header = document.querySelector(".site-header");
-      const progressBar = document.querySelector("[data-progress]");
-      let frame = 0;
+      const content = document.querySelector("[data-smooth-content]");
+      const progress = document.querySelector("[data-progress]");
+      const header = document.querySelector(".nav");
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const coarse = window.matchMedia("(pointer: coarse)").matches;
+      const narrow = window.innerWidth < 760;
+
+      if (!content || reduced || coarse || narrow) {
+        document.documentElement.classList.add("native-scroll");
+        return undefined;
+      }
+
+      let current = window.scrollY;
+      let target = window.scrollY;
+      let raf = 0;
+
+      function setHeight() {
+        document.body.style.height = `${content.getBoundingClientRect().height}px`;
+      }
 
       function update() {
-        frame = 0;
-        const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-        const progressValue = scrollable > 0 ? window.scrollY / scrollable : 0;
-        const heroScale = 1 + Math.min(window.scrollY, 220) * 0.00012;
-        const approachShift = Math.min(window.scrollY, 500) * -0.018;
-        document.documentElement.style.setProperty("--page-scroll", String(window.scrollY));
-        document.documentElement.style.setProperty("--hero-scale", heroScale.toFixed(4));
-        document.documentElement.style.setProperty("--approach-shift", `${approachShift.toFixed(2)}px`);
-        progressBar.style.transform = `scaleX(${Math.min(1, Math.max(0, progressValue))})`;
-        header.classList.toggle("is-scrolled", window.scrollY > 24);
+        target = window.scrollY;
+        current += (target - current) * 0.085;
+
+        if (Math.abs(target - current) < 0.08) current = target;
+
+        content.style.transform = `translate3d(0, ${-current}px, 0)`;
+        document.documentElement.style.setProperty("--scroll-y", current.toFixed(2));
+
+        const maxScroll = Math.max(1, document.body.scrollHeight - window.innerHeight);
+        progress.style.transform = `scaleX(${Math.min(1, current / maxScroll)})`;
+        header.classList.toggle("is-scrolled", current > 24);
+
+        raf = requestAnimationFrame(update);
       }
 
-      function requestUpdate() {
-        if (!frame) frame = requestAnimationFrame(update);
+      function handleAnchor(event) {
+        const link = event.target.closest('a[href^="#"]');
+        if (!link) return;
+        const targetElement = document.querySelector(link.getAttribute("href"));
+        if (!targetElement) return;
+        event.preventDefault();
+        const top = targetElement.getBoundingClientRect().top + current;
+        window.scrollTo({ top, behavior: "smooth" });
       }
+
+      setHeight();
+      setTimeout(setHeight, 250);
+      setTimeout(setHeight, 1200);
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(setHeight);
+      }
+
+      const resizeObserver = new ResizeObserver(setHeight);
+      resizeObserver.observe(content);
 
       update();
-      window.addEventListener("scroll", requestUpdate, { passive: true });
-      window.addEventListener("resize", requestUpdate);
+      window.addEventListener("resize", setHeight);
+      document.addEventListener("click", handleAnchor);
 
       return () => {
-        window.removeEventListener("scroll", requestUpdate);
-        window.removeEventListener("resize", requestUpdate);
-        if (frame) cancelAnimationFrame(frame);
+        cancelAnimationFrame(raf);
+        resizeObserver.disconnect();
+        window.removeEventListener("resize", setHeight);
+        document.removeEventListener("click", handleAnchor);
+        document.body.style.height = "";
+        content.style.transform = "";
       };
     }, []);
 
     return h("div", { className: "scroll-progress", "data-progress": true });
   }
 
-  function HeroVisual() {
-    const canvasRef = useRef(null);
-
-    useEffect(() => {
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d");
-      let width = 0;
-      let height = 0;
-      let raf = 0;
-      let tick = 0;
-
-      function resize() {
-        const rect = canvas.getBoundingClientRect();
-        const ratio = window.devicePixelRatio || 1;
-        width = rect.width;
-        height = rect.height;
-        canvas.width = Math.max(1, width * ratio);
-        canvas.height = Math.max(1, height * ratio);
-        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-      }
-
-      function wave(yBase, amp, speed, color, widthLine) {
-        ctx.beginPath();
-        for (let x = -20; x <= width + 20; x += 16) {
-          const y =
-            yBase +
-            Math.sin(x * 0.011 + tick * speed) * amp +
-            Math.sin(x * 0.027 - tick * speed * 0.7) * amp * 0.34;
-          if (x === -20) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-        ctx.strokeStyle = color;
-        ctx.lineWidth = widthLine;
-        ctx.stroke();
-      }
-
-      function draw() {
-        tick += 0.011;
-        ctx.clearRect(0, 0, width, height);
-
-        const bg = ctx.createLinearGradient(0, 0, width, height);
-        bg.addColorStop(0, "#f7f8f4");
-        bg.addColorStop(0.45, "#dfe5de");
-        bg.addColorStop(1, "#f4eee7");
-        ctx.fillStyle = bg;
-        ctx.fillRect(0, 0, width, height);
-
-        ctx.globalAlpha = 0.28;
-        for (let x = 0; x < width; x += 52) {
-          ctx.beginPath();
-          ctx.moveTo(x, 0);
-          ctx.lineTo(x + Math.sin(tick + x) * 16, height);
-          ctx.strokeStyle = "#17201c";
-          ctx.lineWidth = 1;
-          ctx.stroke();
-        }
-        ctx.globalAlpha = 1;
-
-        wave(height * 0.44, 34, 1.2, "rgba(17, 24, 39, 0.42)", 1.1);
-        wave(height * 0.53, 48, 0.82, "rgba(15, 118, 110, 0.36)", 1);
-        wave(height * 0.64, 28, 1.6, "rgba(255, 111, 97, 0.30)", 1);
-
-        ctx.fillStyle = "rgba(17, 24, 39, 0.78)";
-        for (let i = 0; i < 26; i += 1) {
-          const x = ((i * 97 + Math.sin(tick + i) * 28) % width + width) % width;
-          const y = height * (0.22 + ((i * 37) % 56) / 100);
-          ctx.beginPath();
-          ctx.arc(x, y, i % 5 === 0 ? 2.4 : 1.4, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        raf = requestAnimationFrame(draw);
-      }
-
-      resize();
-      draw();
-      window.addEventListener("resize", resize);
-
-      return () => {
-        cancelAnimationFrame(raf);
-        window.removeEventListener("resize", resize);
-      };
-    }, []);
-
-    return h(
-      "div",
-      { className: "hero-visual", "data-reveal": true },
-      h(canvasRef ? "canvas" : "div", {
-        ref: canvasRef,
-        "aria-hidden": "true",
-      }),
-      h("div", { className: "hero-visual-caption" }, "RAG / OCR / Optimization signal study")
-    );
-  }
-
-  function Header() {
+  function Nav() {
     return h(
       "header",
-      { className: "site-header" },
-      h("a", { className: "brand", href: "#top", "aria-label": "Mawardi Rosli home" }, "MAWARDI"),
+      { className: "nav" },
+      h("a", { className: "nav-brand", href: "#top" }, "Mawardi Rosli"),
       h(
         "nav",
-        { className: "main-nav", "aria-label": "Primary navigation" },
-        navItems.map(([number, label, href]) =>
-          h(
-            "a",
-            { href, key: href },
-            h("span", null, number),
-            label
-          )
+        { className: "nav-links", "aria-label": "Primary navigation" },
+        nav.map(([number, label, href]) =>
+          h("a", { href, key: href }, h("span", null, number), label)
         )
       )
     );
   }
 
-  function FloatingSpotify() {
+  function SpotifyPanel() {
     return h(
       "aside",
-      { className: "audio-dock", "aria-label": "Spotify playlist" },
-      h("div", { className: "audio-label" }, h("span", null, "Listening"), h("strong", null, spotify.title)),
+      { className: "spotify-panel", "data-reveal": true },
+      h("div", { className: "spotify-copy" }, h("span", null, "On rotation"), h("strong", null, "Music while building")),
       h("iframe", {
         title: "Spotify playlist",
-        src: spotify.embedUrl,
+        src: profile.spotify,
         width: "100%",
         height: "152",
         frameBorder: "0",
         allowFullScreen: true,
-        allow:
-          "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture",
+        allow: "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture",
         loading: "lazy",
       })
     );
@@ -312,165 +253,161 @@
   function Hero() {
     return h(
       "section",
-      { id: "top", className: "hero" },
+      { id: "top", className: "hero grid-shell" },
       h(
         "div",
-        { className: "hero-copy-block" },
-        h("p", { className: "hero-kicker", "data-reveal": true }, `${profile.role} / ${profile.location}`),
-        h("h1", { "data-reveal": true }, profile.statement),
-        h("a", { className: "explore-link", href: "#overview", "data-reveal": true }, "Explore", h(IconArrow))
+        { className: "hero-meta", "data-reveal": true },
+        h("span", null, profile.title),
+        h("span", null, profile.location)
       ),
-      h(
-        "div",
-        { className: "hero-focus", "data-reveal": true },
-        focusAreas.map(([title, body]) =>
-          h(
-            "a",
-            { href: "#projects", key: title },
-            h("strong", null, title),
-            h("span", null, body)
-          )
-        )
-      ),
-      h(HeroVisual)
+      h("h1", { className: "hero-title", "data-reveal": true }, profile.hero),
+      h("p", { className: "hero-intro", "data-reveal": true }, profile.intro),
+      h(SpotifyPanel)
     );
   }
 
-  function SectionTitle({ kicker, title }) {
+  function SectionHeading({ number, title, label }) {
     return h(
       "div",
-      { className: "section-title", "data-reveal": true },
-      h("p", null, kicker),
+      { className: "section-heading grid-shell", "data-reveal": true },
+      h("span", null, number),
+      h("p", null, label),
       h("h2", null, title)
     );
   }
 
-  function Overview() {
+  function About() {
     return h(
       "section",
-      { id: "overview", className: "overview section-wrap" },
-      h(SectionTitle, { kicker: "Overview Breakthrough", title: "Applied intelligence, made useful." }),
+      { id: "about", className: "section-block" },
+      h(SectionHeading, {
+        number: "01",
+        label: "About / Education",
+        title: "Research mind, production habits.",
+      }),
       h(
         "div",
-        { className: "overview-lede", "data-reveal": true },
-        h("p", null, profile.intro),
-        h("a", { href: "#progress" }, "Research Insight", h(IconArrow))
-      ),
-      h(
-        "div",
-        { className: "overview-grid" },
-        overview.map(([label, value]) =>
+        { className: "bento grid-shell" },
+        aboutCards.map((card) =>
           h(
             "article",
-            { key: label, "data-reveal": true },
-            h("span", null, label),
-            h("strong", null, value)
+            { className: `bento-card ${card.size}`, key: card.eyebrow, "data-reveal": true },
+            h("span", null, card.eyebrow),
+            h("h3", null, card.title),
+            h("p", null, card.body)
           )
-        )
-      ),
-      h(
-        "div",
-        { className: "language-row", "data-reveal": true },
-        h("span", null, "0.4 How I Work"),
-        language.map(([short, long]) =>
-          h("div", { key: short }, h("strong", null, short), h("p", null, long))
         )
       )
     );
   }
 
-  function Approach() {
+  function Experience() {
     return h(
       "section",
-      { id: "approach", className: "approach section-wrap" },
-      h(SectionTitle, { kicker: "Meet My", title: "Invisible Approach" }),
+      { id: "experience", className: "section-block" },
+      h(SectionHeading, {
+        number: "02",
+        label: "Experience",
+        title: "A timeline of applied AI work.",
+      }),
       h(
         "div",
-        { className: "approach-media" },
-        h(
-          "figure",
-          { "data-reveal": true },
-          h("div", { className: "approach-image approach-image-one" }),
-          h("figcaption", null, "Retrieval systems that keep answers tied to evidence.")
-        ),
-        h(
-          "figure",
-          { "data-reveal": true },
-          h("div", { className: "approach-image approach-image-two" }),
-          h("figcaption", null, "Vision pipelines that turn noisy text into reliable structure.")
+        { className: "timeline grid-shell" },
+        experience.map((item) =>
+          h(
+            "article",
+            { className: "timeline-item", key: item.role, "data-reveal": true },
+            h("time", null, item.date),
+            h(
+              "div",
+              null,
+              h("h3", null, item.role),
+              h("span", null, item.org),
+              h("p", null, item.body)
+            )
+          )
         )
-      ),
-      h(
-        "div",
-        { className: "approach-text", "data-reveal": true },
-        h(
-          "p",
-          null,
-          "I am currently shaping my work around AI systems that are quiet at the interface and rigorous underneath: retrieval, evaluation, model behavior, deployment constraints, and the workflows that connect them."
-        ),
-        h("a", { href: "#projects" }, "Explore in depth", h(IconArrow))
       )
+    );
+  }
+
+  function ProjectVisual({ type }) {
+    return h(
+      "div",
+      { className: `project-visual ${type}`, "aria-hidden": "true" },
+      h("span", null),
+      h("span", null),
+      h("span", null)
     );
   }
 
   function Projects() {
     return h(
       "section",
-      { id: "projects", className: "projects section-wrap" },
-      h(SectionTitle, { kicker: "Our Progress", title: "The new method." }),
+      { id: "projects", className: "section-block projects" },
+      h(SectionHeading, {
+        number: "03",
+        label: "Project Gallery",
+        title: "Large-format studies in AI systems.",
+      }),
       h(
         "div",
-        { className: "project-list" },
+        { className: "project-gallery grid-shell" },
         projects.map((project) =>
           h(
             "article",
-            { key: project.title, "data-reveal": true },
-            h("span", { className: "project-number" }, project.number),
-            h("div", null, h("p", null, project.label), h("h3", null, project.title)),
-            h("p", null, project.body),
-            h("a", { href: "#contact" }, "Discuss", h(IconArrow))
+            { className: "project-card", key: project.title, "data-reveal": true },
+            h(ProjectVisual, { type: project.visual }),
+            h(
+              "div",
+              { className: "project-content" },
+              h("span", null, project.number),
+              h("p", null, project.type),
+              h("h3", null, project.title),
+              h("p", null, project.body)
+            )
           )
         )
       ),
       h(
         "div",
-        { className: "tech-strip", "data-reveal": true },
-        tech.map((item) => h("span", { key: item }, item))
-      )
-    );
-  }
-
-  function Progress() {
-    return h(
-      "section",
-      { id: "progress", className: "progress section-wrap" },
-      progress.map((item) =>
-        h(
-          "article",
-          { key: item.number, "data-reveal": true },
-          h("span", null, item.number),
-          h("div", null, h("h2", null, item.title), h("p", null, item.body)),
-          h("a", { href: item.number === "3.0" ? "#contact" : "#overview" }, item.action, h(IconArrow))
-        )
+        { className: "stack-strip grid-shell", "data-reveal": true },
+        stack.map((item) => h("span", { key: item }, item))
       )
     );
   }
 
   function Contact() {
     return h(
-      "footer",
-      { id: "contact", className: "site-footer" },
+      "section",
+      { id: "contact", className: "section-block contact-section" },
+      h(SectionHeading, {
+        number: "04",
+        label: "Contact",
+        title: "Send a postcard from your side of the internet.",
+      }),
       h(
         "div",
-        { "data-reveal": true },
-        h("p", null, "3.0 Follow"),
-        h("h2", null, "Let the work keep moving.")
-      ),
-      h(
-        "div",
-        { className: "footer-links", "data-reveal": true },
-        profile.socials.map(([label, href]) =>
-          h("a", { href, target: "_blank", rel: "noreferrer", key: label }, label, h(IconArrow))
+        { className: "contact-grid grid-shell" },
+        h(
+          "form",
+          { className: "postcard", "data-reveal": true },
+          h("label", { htmlFor: "message" }, "Message"),
+          h("textarea", { id: "message", placeholder: profile.emailPlaceholder }),
+          h(
+            "div",
+            { className: "postcard-footer" },
+            h("span", null, "No backend yet"),
+            h("button", { type: "button" }, "Draft note", h(Arrow))
+          )
+        ),
+        h(
+          "div",
+          { className: "social-card", "data-reveal": true },
+          h("span", null, "Elsewhere"),
+          profile.links.map(([label, href]) =>
+            h("a", { href, target: "_blank", rel: "noreferrer", key: label }, label, h(Arrow))
+          )
         )
       )
     );
@@ -480,12 +417,14 @@
     return h(
       React.Fragment,
       null,
-      h(ScrollRuntime),
-      h(RevealObserver),
-      h(Header),
-      h(FloatingSpotify),
-      h("main", null, h(Hero), h(Overview), h(Approach), h(Projects), h(Progress)),
-      h(Contact)
+      h(SmoothScrollRuntime),
+      h(RevealRuntime),
+      h(Nav),
+      h(
+        "div",
+        { className: "smooth-content", "data-smooth-content": true },
+        h("main", null, h(Hero), h(About), h(Experience), h(Projects), h(Contact))
+      )
     );
   }
 
