@@ -113,13 +113,50 @@
     "Jupyter",
   ];
 
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
+  function expoOut(value) {
+    if (value >= 1) return 1;
+    return 1 - Math.pow(2, -10 * value);
+  }
+
   function Arrow() {
     return h("span", { className: "arrow", "aria-hidden": "true" }, "->");
+  }
+
+  function KineticHeading({ as = "h2", className = "", children }) {
+    const text = String(children);
+    const words = text.split(/\s+/).filter(Boolean);
+
+    return h(
+      as,
+      {
+        className: `kinetic-heading ${className}`.trim(),
+        "data-kinetic-heading": true,
+        "data-reveal": true,
+        "aria-label": text,
+      },
+      words.map((word, index) =>
+        h(
+          "span",
+          {
+            className: "kinetic-word",
+            "aria-hidden": "true",
+            key: `${word}-${index}`,
+            style: { "--word-delay": `${index * 64}ms` },
+          },
+          h("span", { className: "kinetic-word-text" }, word)
+        )
+      )
+    );
   }
 
   function RevealRuntime() {
     useEffect(() => {
       const elements = document.querySelectorAll("[data-reveal]");
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
@@ -131,12 +168,22 @@
         { threshold: 0.16, rootMargin: "0px 0px -10% 0px" }
       );
 
+      function syncMotionPreference() {
+        document.documentElement.classList.toggle("reduced-motion", reducedMotion.matches);
+      }
+
+      syncMotionPreference();
+      reducedMotion.addEventListener("change", syncMotionPreference);
+
       elements.forEach((element, index) => {
         element.style.setProperty("--reveal-delay", `${Math.min(index % 8, 7) * 70}ms`);
         observer.observe(element);
       });
 
-      return () => observer.disconnect();
+      return () => {
+        observer.disconnect();
+        reducedMotion.removeEventListener("change", syncMotionPreference);
+      };
     }, []);
 
     return null;
@@ -147,14 +194,117 @@
       const content = document.querySelector("[data-smooth-content]");
       const progress = document.querySelector("[data-progress]");
       const header = document.querySelector(".nav");
+      const sections = Array.from(document.querySelectorAll("[data-section-layer]"));
+      const galleries = Array.from(document.querySelectorAll("[data-project-gallery]"));
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const coarse = window.matchMedia("(pointer: coarse)").matches;
       const narrow = window.innerWidth < 760;
 
+      sections.forEach((section, index) => {
+        section.style.setProperty("--section-index", String(index + 1));
+      });
+
+      function updateProgress(scrollY) {
+        if (!progress) return;
+        const maxScroll = Math.max(1, document.body.scrollHeight - window.innerHeight);
+        progress.style.transform = `scaleX(${Math.min(1, scrollY / maxScroll)})`;
+      }
+
+      function updateSectionLayers(scrollY) {
+        if (reduced || coarse || narrow) return;
+
+        sections.forEach((section, index) => {
+          if (index === 0) {
+            section.style.setProperty("--layer-x", "0px");
+            section.style.setProperty("--layer-y", "0px");
+            section.style.setProperty("--layer-scale", "1");
+            return;
+          }
+
+          const start = section.offsetTop - window.innerHeight * 0.92;
+          const end = section.offsetTop - window.innerHeight * 0.12;
+          const raw = clamp((scrollY - start) / Math.max(1, end - start), 0, 1);
+          const eased = expoOut(raw);
+          const direction = index % 2 === 0 ? -1 : 1;
+
+          section.style.setProperty("--layer-x", `${((1 - eased) * direction * 42).toFixed(2)}px`);
+          section.style.setProperty("--layer-y", `${((1 - eased) * 88).toFixed(2)}px`);
+          section.style.setProperty("--layer-scale", (0.985 + eased * 0.015).toFixed(4));
+        });
+      }
+
+      function updateProjectRail() {
+        galleries.forEach((gallery) => {
+          const galleryRect = gallery.getBoundingClientRect();
+          if (galleryRect.bottom < 0 || galleryRect.top > window.innerHeight) return;
+
+          const center = galleryRect.left + galleryRect.width / 2;
+          const cards = Array.from(gallery.querySelectorAll(".project-card"));
+
+          cards.forEach((card) => {
+            const rect = card.getBoundingClientRect();
+            const cardCenter = rect.left + rect.width / 2;
+            const distance = Math.abs(cardCenter - center);
+            const active = clamp(1 - distance / Math.max(1, galleryRect.width * 0.68), 0, 1);
+            const eased = expoOut(active);
+
+            card.style.setProperty("--project-scale", (0.965 + eased * 0.035).toFixed(4));
+            card.style.setProperty("--project-y", `${((1 - eased) * 18).toFixed(2)}px`);
+          });
+        });
+      }
+
+      function updateChrome(scrollY) {
+        updateProgress(scrollY);
+        updateSectionLayers(scrollY);
+        updateProjectRail();
+        if (header) header.classList.toggle("is-scrolled", scrollY > 24);
+      }
+
+      function handleGalleryWheel(event) {
+        const gallery = event.currentTarget;
+        const maxScroll = gallery.scrollWidth - gallery.clientWidth;
+        if (maxScroll <= 0 || reduced) return;
+
+        const delta = Math.abs(event.deltaY) > Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
+        if (!delta) return;
+
+        const next = clamp(gallery.scrollLeft + delta * 1.14, 0, maxScroll);
+        const atStart = gallery.scrollLeft <= 0 && delta < 0;
+        const atEnd = gallery.scrollLeft >= maxScroll - 1 && delta > 0;
+
+        if (atStart || atEnd) return;
+
+        event.preventDefault();
+        gallery.scrollLeft = next;
+        updateProjectRail();
+      }
+
+      galleries.forEach((gallery) => {
+        gallery.addEventListener("wheel", handleGalleryWheel, { passive: false });
+        gallery.addEventListener("scroll", updateProjectRail, { passive: true });
+      });
+
       if (!content || reduced || coarse || narrow) {
         document.documentElement.classList.add("native-scroll");
-        return undefined;
+        updateChrome(window.scrollY);
+
+        function handleNativeScroll() {
+          updateChrome(window.scrollY);
+        }
+
+        window.addEventListener("scroll", handleNativeScroll, { passive: true });
+
+        return () => {
+          window.removeEventListener("scroll", handleNativeScroll);
+          galleries.forEach((gallery) => {
+            gallery.removeEventListener("wheel", handleGalleryWheel);
+            gallery.removeEventListener("scroll", updateProjectRail);
+          });
+        };
       }
+
+      document.documentElement.classList.remove("native-scroll");
 
       let current = window.scrollY;
       let target = window.scrollY;
@@ -173,9 +323,7 @@
         content.style.transform = `translate3d(0, ${-current}px, 0)`;
         document.documentElement.style.setProperty("--scroll-y", current.toFixed(2));
 
-        const maxScroll = Math.max(1, document.body.scrollHeight - window.innerHeight);
-        progress.style.transform = `scaleX(${Math.min(1, current / maxScroll)})`;
-        header.classList.toggle("is-scrolled", current > 24);
+        updateChrome(current);
 
         raf = requestAnimationFrame(update);
       }
@@ -209,12 +357,111 @@
         resizeObserver.disconnect();
         window.removeEventListener("resize", setHeight);
         document.removeEventListener("click", handleAnchor);
+        galleries.forEach((gallery) => {
+          gallery.removeEventListener("wheel", handleGalleryWheel);
+          gallery.removeEventListener("scroll", updateProjectRail);
+        });
         document.body.style.height = "";
         content.style.transform = "";
       };
     }, []);
 
     return h("div", { className: "scroll-progress", "data-progress": true });
+  }
+
+  function PropelInteractionsRuntime() {
+    useEffect(() => {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) return undefined;
+
+      const magneticTargets = Array.from(document.querySelectorAll("[data-magnetic]"));
+      const tiltCards = Array.from(document.querySelectorAll("[data-tilt-card]"));
+      const pointer = { x: 0, y: 0 };
+      let raf = 0;
+
+      function resetMagnet(target) {
+        target.style.setProperty("--magnet-x", "0px");
+        target.style.setProperty("--magnet-y", "0px");
+        target.style.setProperty("--magnet-scale", "1");
+      }
+
+      function updateMagnet() {
+        raf = 0;
+
+        magneticTargets.forEach((target) => {
+          const rect = target.getBoundingClientRect();
+          const radius = 30;
+          const inRange =
+            pointer.x >= rect.left - radius &&
+            pointer.x <= rect.right + radius &&
+            pointer.y >= rect.top - radius &&
+            pointer.y <= rect.bottom + radius;
+
+          if (!inRange) {
+            resetMagnet(target);
+            return;
+          }
+
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          const edgeX = Math.max(Math.abs(pointer.x - centerX) - rect.width / 2, 0);
+          const edgeY = Math.max(Math.abs(pointer.y - centerY) - rect.height / 2, 0);
+          const edgeDistance = Math.hypot(edgeX, edgeY);
+          const intensity = 1 - clamp(edgeDistance / radius, 0, 1);
+          const x = clamp((pointer.x - centerX) * 0.18 * intensity, -12, 12);
+          const y = clamp((pointer.y - centerY) * 0.18 * intensity, -10, 10);
+
+          target.style.setProperty("--magnet-x", `${x.toFixed(2)}px`);
+          target.style.setProperty("--magnet-y", `${y.toFixed(2)}px`);
+          target.style.setProperty("--magnet-scale", (1 + intensity * 0.025).toFixed(3));
+        });
+      }
+
+      function handlePointerMove(event) {
+        pointer.x = event.clientX;
+        pointer.y = event.clientY;
+        if (!raf) raf = requestAnimationFrame(updateMagnet);
+      }
+
+      function handlePointerLeave() {
+        magneticTargets.forEach(resetMagnet);
+      }
+
+      function handleTilt(event) {
+        const card = event.currentTarget;
+        const rect = card.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width - 0.5;
+        const y = (event.clientY - rect.top) / rect.height - 0.5;
+
+        card.style.setProperty("--tilt-x", `${(-y * 6).toFixed(2)}deg`);
+        card.style.setProperty("--tilt-y", `${(x * 7).toFixed(2)}deg`);
+      }
+
+      function resetTilt(event) {
+        const card = event.currentTarget;
+        card.style.setProperty("--tilt-x", "0deg");
+        card.style.setProperty("--tilt-y", "0deg");
+      }
+
+      document.addEventListener("pointermove", handlePointerMove);
+      document.addEventListener("pointerleave", handlePointerLeave);
+      tiltCards.forEach((card) => {
+        card.addEventListener("pointermove", handleTilt);
+        card.addEventListener("pointerleave", resetTilt);
+      });
+
+      return () => {
+        cancelAnimationFrame(raf);
+        document.removeEventListener("pointermove", handlePointerMove);
+        document.removeEventListener("pointerleave", handlePointerLeave);
+        tiltCards.forEach((card) => {
+          card.removeEventListener("pointermove", handleTilt);
+          card.removeEventListener("pointerleave", resetTilt);
+        });
+      };
+    }, []);
+
+    return null;
   }
 
   function Nav() {
@@ -253,14 +500,14 @@
   function Hero() {
     return h(
       "section",
-      { id: "top", className: "hero grid-shell" },
+      { id: "top", className: "hero grid-shell", "data-section-layer": true },
       h(
         "div",
         { className: "hero-meta", "data-reveal": true },
         h("span", null, profile.title),
         h("span", null, profile.location)
       ),
-      h("h1", { className: "hero-title", "data-reveal": true }, profile.hero),
+      h(KineticHeading, { as: "h1", className: "hero-title" }, profile.hero),
       h("p", { className: "hero-intro", "data-reveal": true }, profile.intro),
       h(SpotifyPanel)
     );
@@ -269,17 +516,17 @@
   function SectionHeading({ number, title, label }) {
     return h(
       "div",
-      { className: "section-heading grid-shell", "data-reveal": true },
-      h("span", null, number),
-      h("p", null, label),
-      h("h2", null, title)
+      { className: "section-heading grid-shell" },
+      h("span", { "data-reveal": true }, number),
+      h("p", { "data-reveal": true }, label),
+      h(KineticHeading, null, title)
     );
   }
 
   function About() {
     return h(
       "section",
-      { id: "about", className: "section-block" },
+      { id: "about", className: "section-block", "data-section-layer": true },
       h(SectionHeading, {
         number: "01",
         label: "About / Education",
@@ -291,7 +538,12 @@
         aboutCards.map((card) =>
           h(
             "article",
-            { className: `bento-card ${card.size}`, key: card.eyebrow, "data-reveal": true },
+            {
+              className: `bento-card ${card.size}`,
+              key: card.eyebrow,
+              "data-reveal": true,
+              "data-tilt-card": true,
+            },
             h("span", null, card.eyebrow),
             h("h3", null, card.title),
             h("p", null, card.body)
@@ -304,7 +556,7 @@
   function Experience() {
     return h(
       "section",
-      { id: "experience", className: "section-block" },
+      { id: "experience", className: "section-block", "data-section-layer": true },
       h(SectionHeading, {
         number: "02",
         label: "Experience",
@@ -316,7 +568,7 @@
         experience.map((item) =>
           h(
             "article",
-            { className: "timeline-item", key: item.role, "data-reveal": true },
+            { className: "timeline-item", key: item.role, "data-reveal": true, "data-tilt-card": true },
             h("time", null, item.date),
             h(
               "div",
@@ -344,7 +596,7 @@
   function Projects() {
     return h(
       "section",
-      { id: "projects", className: "section-block projects" },
+      { id: "projects", className: "section-block projects", "data-section-layer": true },
       h(SectionHeading, {
         number: "03",
         label: "Project Gallery",
@@ -352,7 +604,7 @@
       }),
       h(
         "div",
-        { className: "project-gallery grid-shell" },
+        { className: "project-gallery grid-shell", "data-project-gallery": true },
         projects.map((project) =>
           h(
             "article",
@@ -380,7 +632,7 @@
   function Contact() {
     return h(
       "section",
-      { id: "contact", className: "section-block contact-section" },
+      { id: "contact", className: "section-block contact-section", "data-section-layer": true },
       h(SectionHeading, {
         number: "04",
         label: "Contact",
@@ -398,7 +650,7 @@
             "div",
             { className: "postcard-footer" },
             h("span", null, "No backend yet"),
-            h("button", { type: "button" }, "Draft note", h(Arrow))
+            h("button", { type: "button", "data-magnetic": true }, "Seal & Send", h(Arrow))
           )
         ),
         h(
@@ -406,7 +658,12 @@
           { className: "social-card", "data-reveal": true },
           h("span", null, "Elsewhere"),
           profile.links.map(([label, href]) =>
-            h("a", { href, target: "_blank", rel: "noreferrer", key: label }, label, h(Arrow))
+            h(
+              "a",
+              { href, target: "_blank", rel: "noreferrer", key: label, "data-magnetic": true },
+              label,
+              h(Arrow)
+            )
           )
         )
       )
@@ -419,6 +676,7 @@
       null,
       h(SmoothScrollRuntime),
       h(RevealRuntime),
+      h(PropelInteractionsRuntime),
       h(Nav),
       h(
         "div",
