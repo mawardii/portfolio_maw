@@ -157,11 +157,18 @@
     useEffect(() => {
       const elements = document.querySelectorAll("[data-reveal]");
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const revealTimeouts = new Set();
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             if (!entry.isIntersecting) return;
             entry.target.classList.add("is-visible");
+            const delay = Number(entry.target.dataset.revealDelay || 0);
+            const timeout = window.setTimeout(() => {
+              entry.target.style.setProperty("--reveal-delay", "0ms");
+              revealTimeouts.delete(timeout);
+            }, delay + 1200);
+            revealTimeouts.add(timeout);
             observer.unobserve(entry.target);
           });
         },
@@ -176,12 +183,15 @@
       reducedMotion.addEventListener("change", syncMotionPreference);
 
       elements.forEach((element, index) => {
-        element.style.setProperty("--reveal-delay", `${Math.min(index % 8, 7) * 70}ms`);
+        const delay = Math.min(index % 8, 7) * 70;
+        element.dataset.revealDelay = String(delay);
+        element.style.setProperty("--reveal-delay", `${delay}ms`);
         observer.observe(element);
       });
 
       return () => {
         observer.disconnect();
+        revealTimeouts.forEach((timeout) => window.clearTimeout(timeout));
         reducedMotion.removeEventListener("change", syncMotionPreference);
       };
     }, []);
