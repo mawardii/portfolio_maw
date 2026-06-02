@@ -1,0 +1,13 @@
+interface:
+  display_name: "AI Solution Planner"
+  short_description: "Scope AI products from idea to eval plan."
+  default_prompt: "Use $ai-solution-planner to turn this AI idea into a scoped MVP and evaluation plan."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "openaiDeveloperDocs"
+      description: "OpenAI developer documentation for current API and model guidance."
+      transport: "streamable_http"
+      url: "https://developers.openai.com/mcp"
+policy:
+  allow_implicit_invocation: true

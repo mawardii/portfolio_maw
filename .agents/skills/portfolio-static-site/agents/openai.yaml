@@ -1,0 +1,6 @@
+interface:
+  display_name: "Portfolio Static Site"
+  short_description: "Maintain this no-build React portfolio."
+  default_prompt: "Use $portfolio-static-site to improve this portfolio page and verify it locally."
+policy:
+  allow_implicit_invocation: true

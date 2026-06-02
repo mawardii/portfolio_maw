@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "commandWindows": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"git status --short\"",
+            "timeout": 10,
+            "statusMessage": "Checking workspace status"
+          }
+        ]
+      }
+    ]
+  }
+}

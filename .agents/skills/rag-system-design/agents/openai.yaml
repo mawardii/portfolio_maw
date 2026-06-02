@@ -1,0 +1,13 @@
+interface:
+  display_name: "RAG System Design"
+  short_description: "Plan reliable retrieval and document AI."
+  default_prompt: "Use $rag-system-design to design a RAG system for this document workflow."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "openaiDeveloperDocs"
+      description: "OpenAI developer documentation for current API and model guidance."
+      transport: "streamable_http"
+      url: "https://developers.openai.com/mcp"
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,52 @@
+# Project-scoped Codex defaults for this portfolio.
+# This file is active only when the project is trusted.
+
+project_doc_max_bytes = 65536
+project_doc_fallback_filenames = ["TEAM_GUIDE.md", ".agents.md"]
+
+[features]
+hooks = true
+
+[agents]
+max_threads = 6
+max_depth = 1
+job_max_runtime_seconds = 1800
+
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"
+required = false
+tool_timeout_sec = 60
+default_tools_approval_mode = "auto"
+
+# Enable after Node/npm command shims work in the shell you use for Codex.
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"]
+enabled = false
+required = false
+tool_timeout_sec = 60
+default_tools_approval_mode = "auto"
+
+# Enable when browser automation through an MCP server is preferred over the bundled Browser plugin.
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "@playwright/mcp@latest"]
+enabled = false
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 90
+default_tools_approval_mode = "prompt"
+
+# Enable only after GitHub authentication is configured for your workspace.
+[mcp_servers.github]
+url = "https://api.githubcopilot.com/mcp/"
+enabled = false
+required = false
+tool_timeout_sec = 90
+default_tools_approval_mode = "prompt"
+
+# Memories are user-level, not project-level. To enable them globally, add this
+# to ~/.codex/config.toml after reviewing privacy implications:
+#
+# [features]
+# memories = true

@@ -1,0 +1,6 @@
+interface:
+  display_name: "AI Eval Plan"
+  short_description: "Design useful model and app evaluations."
+  default_prompt: "Use $ai-eval-plan to create an evaluation plan for this AI prototype."
+policy:
+  allow_implicit_invocation: true

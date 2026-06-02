@@ -1,0 +1,32 @@
+# Conservative project command rules.
+# Project-local rules load only when this .codex layer is trusted.
+
+prefix_rule(
+    pattern = ["git", "reset", "--hard"],
+    decision = "forbidden",
+    justification = "Do not destroy uncommitted user work. Inspect status and diff, then ask for an explicit recovery plan.",
+    match = [
+        "git reset --hard",
+        "git reset --hard HEAD",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "clean"],
+    decision = "prompt",
+    justification = "Cleaning can delete untracked files. Confirm the exact paths first.",
+    match = [
+        "git clean -fd",
+        "git clean -fdx",
+    ],
+)
+
+prefix_rule(
+    pattern = ["Remove-Item"],
+    decision = "prompt",
+    justification = "PowerShell deletion should be reviewed when recursive or forceful flags may be present.",
+    match = [
+        "Remove-Item file.txt",
+        "Remove-Item -Recurse -Force build",
+    ],
+)

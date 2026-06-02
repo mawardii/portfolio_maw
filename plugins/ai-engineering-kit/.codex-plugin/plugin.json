@@ -1,0 +1,35 @@
+{
+  "name": "ai-engineering-kit",
+  "version": "0.1.0",
+  "description": "Local Codex workflows for AI solution research, planning, evaluation, and implementation.",
+  "author": {
+    "name": "Mawardi Rosli"
+  },
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "keywords": [
+    "ai",
+    "research",
+    "rag",
+    "evaluation",
+    "engineering"
+  ],
+  "interface": {
+    "displayName": "AI Engineering Kit",
+    "shortDescription": "Plan and evaluate AI solutions in Codex.",
+    "longDescription": "A local plugin scaffold that packages practical AI engineering workflows for research briefs, solution planning, RAG design, and evaluation discipline.",
+    "developerName": "Mawardi Rosli",
+    "category": "Productivity",
+    "capabilities": [
+      "Research",
+      "Planning",
+      "Evaluation"
+    ],
+    "defaultPrompt": [
+      "Use ai-solution-planner to turn this AI idea into a build plan.",
+      "Plan the data, evals, risks, and MVP for this AI system.",
+      "Review this AI prototype idea before implementation."
+    ],
+    "brandColor": "#2F6F73"
+  }
+}
