@@ -1,0 +1,7 @@
+interface:
+  display_name: "Interactive Portfolio Systems"
+  short_description: "Build evidence-rich portfolio interactions."
+  default_prompt: "Use $interactive-portfolio-systems to add an interactive AI portfolio section."
+policy:
+  allow_implicit_invocation: true
+

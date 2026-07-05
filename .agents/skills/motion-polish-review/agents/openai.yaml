@@ -1,0 +1,7 @@
+interface:
+  display_name: "Motion Polish Review"
+  short_description: "Refine subtle, performant web animation."
+  default_prompt: "Use $motion-polish-review to tune this site animation."
+policy:
+  allow_implicit_invocation: true
+

@@ -1,0 +1,7 @@
+interface:
+  display_name: "iOS Interface Craft"
+  short_description: "Craft minimalist Apple-like web interfaces."
+  default_prompt: "Use $ios-interface-craft to refine this portfolio interface."
+policy:
+  allow_implicit_invocation: true
+

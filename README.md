@@ -1,6 +1,6 @@
 # Mawardi Rosli Portfolio
 
-A minimalist AI/ML portfolio landing page with responsive layout, animated section reveals, an interactive neural-field hero visual, project cards, social links, and a Spotify playlist area.
+A minimalist AI/ML portfolio built on a Swiss editorial grid: warm paper canvas, oversized grotesk headlines, monospaced meta labels, hairline rules, numbered sections, and a single restrained accent. Includes an interactive systems-focus console, a marquee stack ticker, filterable capability directory, project explorer, experience timeline, local design-agent skills, a brief builder, social links, and a Spotify playlist area.
 
 ## Preview
 
@@ -12,17 +12,27 @@ node scripts/preview.mjs
 
 Then open `http://127.0.0.1:5173/`. React is vendored locally; internet access is only needed for the Spotify embed.
 
-This first version uses no build step. It still uses React, but through local browser scripts in `vendor/` so it can be opened immediately while the design direction is being shaped.
+This site uses no build step. React is loaded through local browser scripts in `vendor/`, and the application lives in `src/app.js` with styles in `src/styles.css`.
 
 ## Sections
 
-- About
-- Current interests in Generative AI, RAG, computer vision, and model optimization
-- Education
-- Experience
-- Projects
-- Music / Spotify
-- Social links
+- Editorial hero with an interactive systems-focus console
+- Marquee stack ticker
+- Project explorer for RAG, OCR, and optimization work (01)
+- Filterable AI/ML capability directory (02)
+- Experience timeline and technical stack (03)
+- Local design-agent skill cards (04)
+- Contact brief builder, music / Spotify, and social links (05)
+- Footer
+
+## Local Skills
+
+The repo includes Codex skills in `.agents/skills/` for future AI-assisted work:
+
+- `ios-interface-craft`
+- `motion-polish-review`
+- `interactive-portfolio-systems`
+- `portfolio-static-site`
 
 ## Next Setup Step
 
