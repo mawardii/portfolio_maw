@@ -1,11 +1,10 @@
 (function () {
   const h = React.createElement;
-  const { useEffect, useState } = React;
+  const { useEffect, useState, useRef, useCallback } = React;
 
   const profile = {
     name: "Mawardi Rosli",
-    firstName: "Mawardi",
-    lastName: "Rosli",
+    nameParts: ["MAWARDI", "ROSLI"],
     title: "AI/ML Research Officer",
     location: "Malaysia",
     available: "Open to applied AI briefs",
@@ -22,53 +21,47 @@
   };
 
   const nav = [
-    ["Work", "#projects", "01"],
-    ["Capabilities", "#capabilities", "02"],
-    ["Experience", "#experience", "03"],
-    ["Agents", "#agents", "04"],
-    ["Contact", "#contact", "05"],
+    ["Work", "#work"],
+    ["Capabilities", "#capabilities"],
+    ["Experience", "#experience"],
+    ["Agents", "#agents"],
+    ["Contact", "#contact"],
   ];
 
+  // Each mode carries the pipeline stages and the signals actually checked —
+  // no fabricated benchmark numbers, only the measurement surface itself.
   const consoleModes = [
     {
       id: "rag",
       label: "RAG",
-      note: "Grounded retrieval",
-      title: "Grounded answers over private knowledge.",
-      copy:
-        "Retrieval, metadata, reranking, citations, refusal behavior, and regression checks for document assistants.",
+      subtitle: "Grounded retrieval",
+      copy: "Grounded answers over private knowledge with traceable evidence.",
       steps: ["Ingest", "Chunk", "Retrieve", "Rerank", "Ground", "Evaluate"],
-      accent: "blue",
+      signals: ["Grounding", "Citation coverage", "Refusal behavior"],
     },
     {
       id: "ocr",
       label: "OCR",
-      note: "Visual text",
-      title: "Visual text pipelines with cleaner downstream structure.",
-      copy:
-        "Dataset review, extraction quality checks, fine-tuning workflows, and post-processing for document intelligence.",
+      subtitle: "Visual text",
+      copy: "Visual text pipelines with cleaner downstream structure.",
       steps: ["Scan", "Detect", "Extract", "Normalize", "Validate"],
-      accent: "green",
+      signals: ["Extraction review", "Dataset slices", "Post-processing"],
     },
     {
       id: "vision",
       label: "Vision",
-      note: "Measured CV",
-      title: "Computer vision systems that are measured, not guessed.",
-      copy:
-        "Applied model experiments for detection, preprocessing, annotation review, and failure-case analysis.",
+      subtitle: "Measured CV",
+      copy: "Computer vision experiments that are measured, not guessed.",
       steps: ["Frame", "Label", "Train", "Inspect", "Improve"],
-      accent: "amber",
+      signals: ["Failure cases", "Annotation review", "Preprocessing"],
     },
     {
       id: "opt",
       label: "Optimize",
-      note: "Inference-aware",
-      title: "Inference-minded iteration for smaller, steadier models.",
-      copy:
-        "Benchmarking, latency awareness, deployment constraints, and repeatable model comparison notes.",
+      subtitle: "Inference-aware",
+      copy: "Inference-minded iteration for smaller, steadier models.",
       steps: ["Baseline", "Profile", "Compress", "Benchmark", "Ship"],
-      accent: "graphite",
+      signals: ["Baselines", "Latency notes", "Tradeoff log"],
     },
   ];
 
@@ -77,48 +70,55 @@
       title: "RAG System Design",
       category: "Retrieval",
       level: "Core",
+      strength: 5,
       body:
         "Chunking, metadata, retrieval strategy, reranking, grounding, refusal behavior, and evaluation set design.",
-    },
-    {
-      title: "OCR Fine-tuning",
-      category: "Vision",
-      level: "Active",
-      body:
-        "Domain-specific visual text extraction with model checks and cleaner downstream document structure.",
     },
     {
       title: "Generative AI Workflows",
       category: "Generation",
       level: "Core",
+      strength: 5,
       body:
         "LLM application flows that combine prompt design, tool use, grounding, and user-facing review states.",
+    },
+    {
+      title: "OCR Fine-tuning",
+      category: "Vision",
+      level: "Active",
+      strength: 4,
+      body:
+        "Domain-specific visual text extraction with model checks and cleaner downstream document structure.",
     },
     {
       title: "Computer Vision",
       category: "Vision",
       level: "Applied",
+      strength: 4,
       body:
         "Image preprocessing, model experimentation, annotation review, and measured failure analysis.",
-    },
-    {
-      title: "Model Optimization",
-      category: "Optimization",
-      level: "Lab",
-      body:
-        "Inference-aware experiments around benchmarking, lighter models, and practical deployment tradeoffs.",
     },
     {
       title: "AI Evaluation",
       category: "Evaluation",
       level: "Habit",
+      strength: 5,
       body:
         "Baselines, test sets, failure cases, acceptance thresholds, and regression checks before quality claims.",
+    },
+    {
+      title: "Model Optimization",
+      category: "Optimization",
+      level: "Lab",
+      strength: 3,
+      body:
+        "Inference-aware experiments around benchmarking, lighter models, and practical deployment tradeoffs.",
     },
   ];
 
   const projects = [
     {
+      code: "RAG",
       title: "Document Intelligence RAG",
       type: "LLM Systems",
       status: "Active prototype",
@@ -128,10 +128,10 @@
       method:
         "Structured ingestion, metadata-aware retrieval, answer generation, refusal behavior, and manual failure review.",
       stack: ["Python", "LLMs", "RAG", "Vector Search", "Evaluation"],
-      evidence: ["Grounding checks", "Citation coverage", "Failure cases"],
-      accent: "blue",
+      signals: ["Grounding checks", "Citation coverage", "Failure cases"],
     },
     {
+      code: "OCR",
       title: "OCR Fine-tuning Workflow",
       type: "Computer Vision",
       status: "Research build",
@@ -141,10 +141,10 @@
       method:
         "Dataset review, preprocessing, model iteration, extraction checks, and normalization for downstream use.",
       stack: ["Python", "OpenCV", "OCR", "CV", "Jupyter"],
-      evidence: ["Extraction review", "Dataset slices", "Post-processing"],
-      accent: "green",
+      signals: ["Extraction review", "Dataset slices", "Post-processing"],
     },
     {
+      code: "OPT",
       title: "Model Optimization Lab",
       type: "Inference",
       status: "Experiment track",
@@ -154,8 +154,7 @@
       method:
         "Baseline measurement, latency notes, accuracy tradeoff review, and deployment-minded experiment tracking.",
       stack: ["Python", "Benchmarking", "Deep Learning", "Docker"],
-      evidence: ["Baselines", "Latency notes", "Tradeoff log"],
-      accent: "amber",
+      signals: ["Baselines", "Latency notes", "Tradeoff log"],
     },
   ];
 
@@ -215,381 +214,372 @@
   ];
 
   const stack = [
-    "Python",
-    "NumPy",
-    "Pandas",
-    "OpenCV",
-    "LLMs",
-    "RAG",
-    "Deep Learning",
-    "FastAPI",
-    "Flask",
-    "Docker",
-    "PostgreSQL",
-    "Jupyter",
+    "Python", "NumPy", "Pandas", "OpenCV", "LLMs", "RAG",
+    "Deep Learning", "FastAPI", "Flask", "Docker", "PostgreSQL", "Jupyter",
   ];
 
-  const contactTopics = [
-    "RAG system",
-    "OCR pipeline",
-    "Computer vision",
-    "Model evaluation",
-  ];
+  const contactTopics = ["RAG system", "OCR pipeline", "Computer vision", "Model evaluation"];
 
-  function Arrow() {
-    return h("span", { className: "arrow", "aria-hidden": "true" }, "→");
+  // ---- Theme ----------------------------------------------------------------
+  function getInitialTheme() {
+    try {
+      const saved = localStorage.getItem("mr-theme");
+      if (saved === "light" || saved === "dark") return saved;
+    } catch (e) {}
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
   }
 
-  function Index({ n }) {
-    return h("span", { className: "idx", "aria-hidden": "true" }, n);
+  function useTheme() {
+    const [theme, setTheme] = useState(getInitialTheme);
+    useEffect(() => {
+      document.documentElement.setAttribute("data-theme", theme);
+      try {
+        localStorage.setItem("mr-theme", theme);
+      } catch (e) {}
+    }, [theme]);
+    const toggle = useCallback(() => setTheme((t) => (t === "dark" ? "light" : "dark")), []);
+    return [theme, toggle];
   }
 
-  function SectionHeading({ index, eyebrow, title, copy }) {
+  // ---- Small building blocks ------------------------------------------------
+  function Coord({ text }) {
+    return h("span", { className: "coord" }, text);
+  }
+
+  function SectionHead({ tag, title, copy }) {
     return h(
       "div",
-      { className: "section-heading grid-shell" },
-      h(
-        "div",
-        { className: "section-heading-label", "data-reveal": true },
-        h(Index, { n: index }),
-        h("p", { className: "eyebrow" }, eyebrow)
-      ),
-      h(
-        "div",
-        { className: "section-heading-body", "data-reveal": true },
-        h("h2", null, title),
-        copy && h("p", null, copy)
-      )
+      { className: "sec-head", "data-reveal": true },
+      h(Coord, { text: tag }),
+      h("h2", { className: "sec-title" }, title),
+      copy && h("p", { className: "sec-copy" }, copy)
     );
   }
 
-  function RuntimeEffects() {
+  // Seeded signal trace on a canvas — a "signal / noise" motif, decorative,
+  // redrawn per mode and per theme.
+  function SignalCanvas({ seed, theme, active }) {
+    const ref = useRef(null);
     useEffect(() => {
-      const root = document.documentElement;
-      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-      const progress = document.querySelector("[data-progress]");
-      const navNode = document.querySelector(".nav");
-      const reveals = Array.from(document.querySelectorAll("[data-reveal]"));
-      const tiltCards = Array.from(document.querySelectorAll("[data-tilt-card]"));
-      const magneticTargets = Array.from(document.querySelectorAll("[data-magnetic]"));
-      const navLinks = Array.from(document.querySelectorAll("[data-nav-link]"));
-      const revealTimers = new Set();
-      const tiltLeaveHandlers = new Map();
+      const canvas = ref.current;
+      if (!canvas) return;
       let raf = 0;
-      const pointer = { x: 0, y: 0 };
+      const reduce =
+        window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      function syncMotion() {
-        root.classList.toggle("reduced-motion", reducedMotion.matches);
-      }
+      function draw() {
+        const ctx = canvas.getContext("2d");
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        const rect = canvas.getBoundingClientRect();
+        const w = Math.max(1, rect.width);
+        const hh = Math.max(1, rect.height);
+        canvas.width = Math.round(w * dpr);
+        canvas.height = Math.round(hh * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, w, hh);
 
-      function updateScroll() {
-        const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-        const ratio = Math.min(1, window.scrollY / max);
-        if (progress) progress.style.transform = `scaleX(${ratio})`;
-        if (navNode) navNode.classList.toggle("is-scrolled", window.scrollY > 18);
-        root.style.setProperty("--scroll-ratio", ratio.toFixed(4));
-      }
+        const styles = getComputedStyle(document.documentElement);
+        const signal = (styles.getPropertyValue("--signal") || "#2438e0").trim();
+        const line = (styles.getPropertyValue("--line") || "rgba(0,0,0,0.1)").trim();
 
-      function scheduleScroll() {
-        if (raf) return;
-        raf = requestAnimationFrame(() => {
-          raf = 0;
-          updateScroll();
-        });
-      }
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
-            revealNode(entry.target);
-          });
-        },
-        { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
-      );
-
-      function revealNode(node) {
-        node.classList.add("is-visible");
-        const timer = window.setTimeout(() => revealTimers.delete(timer), 1000);
-        revealTimers.add(timer);
-        observer.unobserve(node);
-      }
-
-      function isInView(node) {
-        const rect = node.getBoundingClientRect();
-        return rect.top < window.innerHeight && rect.bottom > 0;
-      }
-
-      function revealVisibleNodes() {
-        reveals.forEach((node) => {
-          if (!node.classList.contains("is-visible") && isInView(node)) revealNode(node);
-        });
-      }
-
-      reveals.forEach((node, index) => {
-        node.style.setProperty("--reveal-delay", `${Math.min(index % 5, 4) * 60}ms`);
-        if (isInView(node)) {
-          revealNode(node);
-        } else {
-          observer.observe(node);
+        // faint grid
+        ctx.strokeStyle = line;
+        ctx.lineWidth = 1;
+        const cols = 8;
+        for (let i = 1; i < cols; i++) {
+          const x = (w / cols) * i;
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, hh);
+          ctx.stroke();
         }
-      });
+        ctx.beginPath();
+        ctx.moveTo(0, hh / 2);
+        ctx.lineTo(w, hh / 2);
+        ctx.stroke();
 
-      // Scrollspy for the primary navigation.
-      const spyTargets = navLinks
-        .map((link) => {
-          const id = (link.getAttribute("href") || "").replace("#", "");
-          const section = id ? document.getElementById(id) : null;
-          return section ? { link, section } : null;
-        })
-        .filter(Boolean);
+        // seeded points: noise settling toward signal on the right
+        const N = 52;
+        let s = seed * 9301 + 49297;
+        const rnd = () => {
+          s = (s * 9301 + 49297) % 233280;
+          return s / 233280;
+        };
+        const pts = [];
+        for (let i = 0; i < N; i++) {
+          const t = i / (N - 1);
+          const noise = (rnd() - 0.5) * (1 - t) * 1.15;
+          const base = Math.sin(t * Math.PI * 2.2 + seed) * 0.32 * (0.4 + t * 0.6);
+          const y = hh / 2 - (base + noise) * (hh * 0.34);
+          pts.push([t * w, y]);
+        }
 
-      let spyObserver = null;
-      if (spyTargets.length) {
-        spyObserver = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              const match = spyTargets.find((t) => t.section === entry.target);
-              if (match && entry.isIntersecting) {
-                navLinks.forEach((l) => l.classList.remove("is-current"));
-                match.link.classList.add("is-current");
-              }
-            });
-          },
-          { rootMargin: "-45% 0px -50% 0px", threshold: 0 }
-        );
-        spyTargets.forEach((t) => spyObserver.observe(t.section));
+        const drawUpTo = (count) => {
+          ctx.clearRect(0, 0, w, hh);
+          // regrid
+          ctx.strokeStyle = line;
+          ctx.lineWidth = 1;
+          for (let i = 1; i < cols; i++) {
+            const x = (w / cols) * i;
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, hh);
+            ctx.stroke();
+          }
+          ctx.beginPath();
+          ctx.moveTo(0, hh / 2);
+          ctx.lineTo(w, hh / 2);
+          ctx.stroke();
+
+          const n = Math.max(2, count);
+          // area fill
+          const grad = ctx.createLinearGradient(0, 0, 0, hh);
+          grad.addColorStop(0, hexA(signal, 0.22));
+          grad.addColorStop(1, hexA(signal, 0));
+          ctx.beginPath();
+          ctx.moveTo(pts[0][0], hh);
+          for (let i = 0; i < n; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+          ctx.lineTo(pts[n - 1][0], hh);
+          ctx.closePath();
+          ctx.fillStyle = grad;
+          ctx.fill();
+          // line
+          ctx.beginPath();
+          ctx.moveTo(pts[0][0], pts[0][1]);
+          for (let i = 1; i < n; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+          ctx.strokeStyle = signal;
+          ctx.lineWidth = 2;
+          ctx.lineJoin = "round";
+          ctx.stroke();
+          // emphasized endpoint
+          const [ex, ey] = pts[n - 1];
+          ctx.beginPath();
+          ctx.arc(ex, ey, 3.4, 0, Math.PI * 2);
+          ctx.fillStyle = signal;
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(ex, ey, 6.5, 0, Math.PI * 2);
+          ctx.strokeStyle = hexA(signal, 0.35);
+          ctx.stroke();
+        };
+
+        if (reduce || !active) {
+          drawUpTo(N);
+          return;
+        }
+        let count = 2;
+        const step = () => {
+          drawUpTo(count);
+          count += 2;
+          if (count <= N) raf = requestAnimationFrame(step);
+        };
+        raf = requestAnimationFrame(step);
       }
 
-      function resetTilt(card) {
-        card.style.setProperty("--tilt-x", "0deg");
-        card.style.setProperty("--tilt-y", "0deg");
+      function hexA(hex, a) {
+        const c = hex.replace("#", "");
+        if (c.length < 6) return `rgba(36,56,224,${a})`;
+        const r = parseInt(c.slice(0, 2), 16);
+        const g = parseInt(c.slice(2, 4), 16);
+        const b = parseInt(c.slice(4, 6), 16);
+        return `rgba(${r},${g},${b},${a})`;
       }
 
-      function handleTilt(event) {
-        if (reducedMotion.matches || window.matchMedia("(pointer: coarse)").matches) return;
-        const card = event.currentTarget;
-        const rect = card.getBoundingClientRect();
-        const x = (event.clientX - rect.left) / rect.width - 0.5;
-        const y = (event.clientY - rect.top) / rect.height - 0.5;
-        card.style.setProperty("--tilt-x", `${(-y * 3).toFixed(2)}deg`);
-        card.style.setProperty("--tilt-y", `${(x * 3.5).toFixed(2)}deg`);
-      }
-
-      function updateMagnet() {
-        magneticTargets.forEach((target) => {
-          const rect = target.getBoundingClientRect();
-          const radius = 28;
-          const centerX = rect.left + rect.width / 2;
-          const centerY = rect.top + rect.height / 2;
-          const distance = Math.hypot(pointer.x - centerX, pointer.y - centerY);
-          const intensity = Math.max(0, 1 - distance / (Math.max(rect.width, rect.height) + radius));
-          const x = Math.max(-8, Math.min(8, (pointer.x - centerX) * 0.12 * intensity));
-          const y = Math.max(-8, Math.min(8, (pointer.y - centerY) * 0.12 * intensity));
-          target.style.setProperty("--magnet-x", `${x.toFixed(2)}px`);
-          target.style.setProperty("--magnet-y", `${y.toFixed(2)}px`);
-        });
-      }
-
-      function handlePointerMove(event) {
-        if (reducedMotion.matches || window.matchMedia("(pointer: coarse)").matches) return;
-        pointer.x = event.clientX;
-        pointer.y = event.clientY;
-        updateMagnet();
-      }
-
-      function resetMagnet() {
-        magneticTargets.forEach((target) => {
-          target.style.setProperty("--magnet-x", "0px");
-          target.style.setProperty("--magnet-y", "0px");
-        });
-      }
-
-      syncMotion();
-      updateScroll();
-      reducedMotion.addEventListener("change", syncMotion);
-      window.addEventListener("scroll", scheduleScroll, { passive: true });
-      window.addEventListener("resize", updateScroll);
-      window.addEventListener("hashchange", revealVisibleNodes);
-      document.addEventListener("pointermove", handlePointerMove);
-      document.addEventListener("pointerleave", resetMagnet);
-      window.setTimeout(revealVisibleNodes, 240);
-      window.setTimeout(revealVisibleNodes, 900);
-      tiltCards.forEach((card) => {
-        const leaveHandler = () => resetTilt(card);
-        tiltLeaveHandlers.set(card, leaveHandler);
-        card.addEventListener("pointermove", handleTilt);
-        card.addEventListener("pointerleave", leaveHandler);
-      });
-
+      draw();
+      const onResize = () => draw();
+      window.addEventListener("resize", onResize);
       return () => {
         cancelAnimationFrame(raf);
-        observer.disconnect();
-        if (spyObserver) spyObserver.disconnect();
-        revealTimers.forEach((timer) => window.clearTimeout(timer));
-        reducedMotion.removeEventListener("change", syncMotion);
-        window.removeEventListener("scroll", scheduleScroll);
-        window.removeEventListener("resize", updateScroll);
-        window.removeEventListener("hashchange", revealVisibleNodes);
-        document.removeEventListener("pointermove", handlePointerMove);
-        document.removeEventListener("pointerleave", resetMagnet);
-        tiltCards.forEach((card) => {
-          card.removeEventListener("pointermove", handleTilt);
-          card.removeEventListener("pointerleave", tiltLeaveHandlers.get(card));
-        });
+        window.removeEventListener("resize", onResize);
       };
-    }, []);
+    }, [seed, theme, active]);
 
-    return h("div", { className: "scroll-progress", "data-progress": true });
+    return h("canvas", { className: "signal-canvas", ref, "aria-hidden": "true" });
   }
 
-  function Nav() {
-    return h(
-      "header",
-      { className: "nav" },
-      h(
-        "a",
-        { className: "nav-brand", href: "#top", "data-magnetic": true },
-        h("span", { className: "nav-brand-mark", "aria-hidden": "true" }, "MR"),
-        h("span", { className: "nav-brand-name" }, profile.name)
-      ),
-      h(
-        "nav",
-        { className: "nav-links", "aria-label": "Primary navigation" },
-        nav.map(([label, href, n]) =>
-          h(
-            "a",
-            { href, key: href, "data-nav-link": true },
-            h("span", { className: "nav-link-idx" }, n),
-            h("span", { className: "nav-link-label" }, label)
-          )
-        )
-      ),
-      h(
-        "a",
-        { className: "nav-status", href: "#contact", "data-magnetic": true },
-        h("span", { className: "status-dot", "aria-hidden": "true" }),
-        profile.available
-      )
-    );
-  }
-
-  function FocusConsole() {
-    const [activeId, setActiveId] = useState(consoleModes[0].id);
-    const activeIndex = consoleModes.findIndex((mode) => mode.id === activeId);
-    const active = consoleModes[activeIndex] || consoleModes[0];
-
+  function EvalConsole({ theme }) {
+    const [idx, setIdx] = useState(0);
+    const mode = consoleModes[idx];
     return h(
       "aside",
-      {
-        className: `focus-console accent-${active.accent}`,
-        "data-reveal": true,
-        "data-tilt-card": true,
-        "aria-label": "AI systems focus console",
-      },
+      { className: "console", "data-reveal": true, "aria-label": "Evaluation console" },
       h(
         "div",
-        { className: "console-head" },
-        h("span", null, "Systems focus"),
-        h("span", { className: "console-count" }, `0${activeIndex + 1} / 0${consoleModes.length}`)
+        { className: "console-bar" },
+        h("span", { className: "console-title" }, "EVAL CONSOLE"),
+        h("span", { className: "console-live" }, h("i", { className: "live-dot", "aria-hidden": "true" }), "tracking")
       ),
       h(
         "div",
-        { className: "console-modes", role: "tablist", "aria-label": "Capability modes" },
-        consoleModes.map((mode, i) =>
+        { className: "console-tabs", role: "tablist", "aria-label": "Systems" },
+        consoleModes.map((m, i) =>
           h(
             "button",
             {
-              key: mode.id,
+              key: m.id,
               type: "button",
               role: "tab",
-              "aria-selected": mode.id === activeId,
-              className: mode.id === activeId ? "console-mode is-active" : "console-mode",
-              onClick: () => setActiveId(mode.id),
+              "aria-selected": i === idx,
+              className: i === idx ? "console-tab is-active" : "console-tab",
+              onClick: () => setIdx(i),
             },
-            h("span", { className: "console-mode-idx" }, `0${i + 1}`),
-            h("span", { className: "console-mode-label" }, mode.label),
-            h("span", { className: "console-mode-note" }, mode.note)
+            m.label
           )
         )
       ),
       h(
         "div",
-        { className: "console-body" },
-        h("h2", null, active.title),
-        h("p", null, active.copy),
+        { className: "console-screen" },
+        h(SignalCanvas, { seed: idx + 3, theme, active: true }),
+        h("span", { className: "screen-tag" }, "SIGNAL / NOISE")
+      ),
+      h(
+        "div",
+        { className: "console-readout" },
+        h("p", { className: "readout-copy" }, mode.copy),
         h(
           "ol",
-          { className: "pipeline", "aria-label": `${active.label} pipeline` },
-          active.steps.map((step, i) =>
+          { className: "pipeline", key: mode.id, "aria-label": mode.label + " pipeline" },
+          mode.steps.map((step, i) =>
             h(
               "li",
-              { key: step, style: { "--i": String(i) } },
-              h("span", { className: "pipeline-node" }, `0${i + 1}`),
-              h("span", { className: "pipeline-step" }, step)
+              { key: step, className: "pipe-step", style: { "--i": String(i) } },
+              h("span", { className: "pipe-dot", "aria-hidden": "true" }),
+              step
             )
+          )
+        ),
+        h(
+          "div",
+          { className: "readout-signals" },
+          h("span", { className: "signals-label" }, "signals"),
+          h(
+            "div",
+            { className: "signals-list" },
+            mode.signals.map((sgnl) => h("span", { className: "sig", key: sgnl }, sgnl))
           )
         )
       )
     );
   }
 
-  function Hero() {
+  function ThemeToggle({ theme, onToggle }) {
     return h(
-      "section",
-      { id: "top", className: "hero grid-shell" },
-      h(
-        "div",
-        { className: "hero-copy" },
-        h(
-          "p",
-          { className: "hero-eyebrow", "data-reveal": true },
-          h("span", null, profile.title),
-          h("span", { className: "dot", "aria-hidden": "true" }),
-          h("span", null, profile.location)
-        ),
-        h(
-          "h1",
-          { className: "hero-title" },
-          h("span", { className: "hero-line", "data-reveal": true }, profile.firstName),
-          h("span", { className: "hero-line hero-line-accent", "data-reveal": true }, profile.lastName)
-        ),
-        h("p", { className: "hero-intro", "data-reveal": true }, profile.intro),
-        h("p", { className: "hero-thesis", "data-reveal": true }, profile.thesis),
-        h(
-          "div",
-          { className: "hero-actions", "data-reveal": true },
-          h(
-            "a",
-            { className: "button button-primary", href: "#projects", "data-magnetic": true },
-            "Explore work",
-            h(Arrow)
-          ),
-          h(
-            "a",
-            { className: "button button-secondary", href: "#contact", "data-magnetic": true },
-            "Start a brief"
-          )
-        )
-      ),
-      h(FocusConsole)
+      "button",
+      {
+        type: "button",
+        className: "theme-toggle",
+        onClick: onToggle,
+        "aria-label": "Toggle color theme",
+        title: "Toggle theme",
+      },
+      h("span", { className: "tt-track", "aria-hidden": "true" }, h("span", { className: "tt-knob" })),
+      h("span", { className: "tt-label" }, theme === "dark" ? "DARK" : "LIGHT")
     );
   }
 
-  function Marquee() {
-    const items = stack.concat(stack);
+  function TopBar({ theme, onToggle }) {
     return h(
-      "div",
-      { className: "marquee", "aria-hidden": "true" },
+      "header",
+      { className: "topbar" },
+      h(
+        "a",
+        { className: "brand", href: "#top" },
+        h("span", { className: "brand-mark", "aria-hidden": "true" }, "MR"),
+        h("span", { className: "brand-name" }, "MAWARDI—ROSLI")
+      ),
+      h(
+        "nav",
+        { className: "nav", "aria-label": "Primary" },
+        nav.map(([label, href]) =>
+          h("a", { key: href, href, "data-nav-link": true }, label)
+        )
+      ),
       h(
         "div",
-        { className: "marquee-track" },
-        items.map((item, i) =>
+        { className: "topbar-right" },
+        h(ThemeToggle, { theme, onToggle })
+      )
+    );
+  }
+
+  function Work() {
+    const [i, setI] = useState(0);
+    const p = projects[i];
+    return h(
+      "section",
+      { id: "work", className: "section" },
+      h(SectionHead, {
+        tag: "WORK — selected systems",
+        title: "Projects, with the evidence kept close.",
+        copy:
+          "Each study names the problem, the method, and the signals I actually check — not headline claims.",
+      }),
+      h(
+        "div",
+        { className: "work-grid" },
+        h(
+          "div",
+          { className: "work-list", role: "tablist", "aria-label": "Projects", "data-reveal": true },
+          projects.map((proj, index) =>
+            h(
+              "button",
+              {
+                key: proj.code,
+                type: "button",
+                role: "tab",
+                "aria-selected": index === i,
+                className: index === i ? "work-item is-active" : "work-item",
+                onClick: () => setI(index),
+              },
+              h("span", { className: "work-code" }, proj.code),
+              h(
+                "span",
+                { className: "work-item-body" },
+                h("strong", null, proj.title),
+                h("em", null, proj.type)
+              ),
+              h("span", { className: "work-status", "data-status": proj.status }, proj.status)
+            )
+          )
+        ),
+        h(
+          "article",
+          { className: "work-detail", "data-reveal": true },
           h(
-            "span",
-            { className: "marquee-item", key: `${item}-${i}` },
-            item,
-            h("span", { className: "marquee-sep" }, "∕")
+            "div",
+            { className: "detail-top" },
+            h("span", { className: "detail-code" }, p.code),
+            h(
+              "div",
+              { className: "detail-meta" },
+              h("span", null, p.type),
+              h("span", null, p.year),
+              h("span", { className: "detail-status" }, p.status)
+            )
+          ),
+          h("h3", { className: "detail-title" }, p.title),
+          h(
+            "div",
+            { className: "detail-body" },
+            h("div", { className: "field" }, h("span", { className: "field-key" }, "PROBLEM"), h("p", null, p.problem)),
+            h("div", { className: "field" }, h("span", { className: "field-key" }, "METHOD"), h("p", null, p.method))
+          ),
+          h(
+            "div",
+            { className: "detail-foot" },
+            h(
+              "div",
+              { className: "signals-tiles" },
+              p.signals.map((sgnl) => h("span", { className: "tile", key: sgnl }, sgnl))
+            ),
+            h(
+              "div",
+              { className: "stack-row" },
+              p.stack.map((tech) => h("span", { className: "tech", key: tech }, tech))
+            )
           )
         )
       )
@@ -597,150 +587,55 @@
   }
 
   function Capabilities() {
-    const categories = ["All"].concat(Array.from(new Set(capabilities.map((item) => item.category))));
+    const categories = ["All"].concat(Array.from(new Set(capabilities.map((c) => c.category))));
     const [filter, setFilter] = useState("All");
-    const visible =
-      filter === "All" ? capabilities : capabilities.filter((item) => item.category === filter);
-
+    const visible = filter === "All" ? capabilities : capabilities.filter((c) => c.category === filter);
     return h(
       "section",
-      { id: "capabilities", className: "section-block capabilities-section" },
-      h(SectionHeading, {
-        index: "02",
-        eyebrow: "Capabilities",
-        title: "A compact skill directory for intelligent systems.",
-        copy:
-          "Category filters, terse cards, and only enough copy to prove what each capability is for.",
+      { id: "capabilities", className: "section" },
+      h(SectionHead, {
+        tag: "CAPABILITIES — measured skills",
+        title: "A working matrix for intelligent systems.",
+        copy: "Filter by area. The bar shows relative depth, not a score.",
       }),
       h(
         "div",
-        { className: "directory-shell grid-shell" },
-        h(
-          "div",
-          { className: "filter-bar", role: "tablist", "aria-label": "Capability filters", "data-reveal": true },
-          categories.map((category) =>
-            h(
-              "button",
-              {
-                key: category,
-                type: "button",
-                role: "tab",
-                "aria-selected": category === filter,
-                className: category === filter ? "is-active" : "",
-                onClick: () => setFilter(category),
-              },
-              category
-            )
-          )
-        ),
-        h(
-          "div",
-          { className: "capability-grid" },
-          visible.map((item, i) =>
-            h(
-              "article",
-              { className: "capability-card", key: item.title, "data-reveal": true },
-              h(
-                "div",
-                { className: "capability-top" },
-                h("span", { className: "capability-num" }, `0${i + 1}`),
-                h("span", { className: "capability-level" }, item.level)
-              ),
-              h("h3", null, item.title),
-              h("p", null, item.body),
-              h(
-                "div",
-                { className: "capability-foot" },
-                h("span", { className: "tag" }, item.category),
-                h(Arrow)
-              )
-            )
+        { className: "filter-row", role: "tablist", "aria-label": "Filter", "data-reveal": true },
+        categories.map((cat) =>
+          h(
+            "button",
+            {
+              key: cat,
+              type: "button",
+              role: "tab",
+              "aria-selected": cat === filter,
+              className: cat === filter ? "chip-btn is-active" : "chip-btn",
+              onClick: () => setFilter(cat),
+            },
+            cat
           )
         )
-      )
-    );
-  }
-
-  function ProjectExplorer() {
-    const [activeIndex, setActiveIndex] = useState(0);
-    const active = projects[activeIndex];
-
-    return h(
-      "section",
-      { id: "projects", className: "section-block projects-section" },
-      h(SectionHeading, {
-        index: "01",
-        eyebrow: "Selected work",
-        title: "Project studies with the evidence kept close.",
-        copy:
-          "Each case highlights the problem, method, current status, and validation surface instead of overclaiming results.",
-      }),
+      ),
       h(
         "div",
-        { className: "project-explorer grid-shell" },
-        h(
-          "div",
-          { className: "project-list", role: "tablist", "aria-label": "Projects", "data-reveal": true },
-          projects.map((project, index) =>
+        { className: "cap-matrix" },
+        visible.map((c) =>
+          h(
+            "article",
+            { className: "cap-row", key: c.title, "data-reveal": true },
+            h("div", { className: "cap-main" }, h("h3", null, c.title), h("p", null, c.body)),
             h(
-              "button",
-              {
-                key: project.title,
-                type: "button",
-                role: "tab",
-                className: index === activeIndex ? "project-tab is-active" : "project-tab",
-                onClick: () => setActiveIndex(index),
-                "aria-selected": index === activeIndex,
-              },
-              h("span", { className: "project-tab-num" }, `0${index + 1}`),
+              "div",
+              { className: "cap-side" },
+              h("span", { className: "cap-cat" }, c.category),
+              h("span", { className: "cap-level" }, c.level),
               h(
                 "span",
-                { className: "project-tab-body" },
-                h("strong", null, project.title),
-                h("em", null, project.type)
-              ),
-              h("span", { className: "project-tab-arrow", "aria-hidden": "true" }, "→")
-            )
-          )
-        ),
-        h(
-          "article",
-          {
-            className: `project-detail accent-${active.accent}`,
-            "data-reveal": true,
-          },
-          h(
-            "div",
-            { className: "project-detail-head" },
-            h(
-              "div",
-              { className: "project-meta" },
-              h("span", null, active.type),
-              h("span", null, active.year),
-              h("span", { className: "project-status" }, active.status)
-            ),
-            h("h3", null, active.title)
-          ),
-          h(
-            "dl",
-            { className: "project-dl" },
-            h("dt", null, "Problem"),
-            h("dd", null, active.problem),
-            h("dt", null, "Method"),
-            h("dd", null, active.method)
-          ),
-          h(
-            "div",
-            { className: "project-footer" },
-            h(
-              "div",
-              { className: "chip-row", "aria-label": "Project stack" },
-              active.stack.map((item) => h("span", { className: "chip", key: item }, item))
-            ),
-            h(
-              "div",
-              { className: "evidence-row", "aria-label": "Evidence surface" },
-              active.evidence.map((item) => h("span", { className: "evidence", key: item }, item))
+                { className: "cap-bar", "aria-hidden": "true" },
+                Array.from({ length: 5 }).map((_, k) =>
+                  h("i", { key: k, className: k < c.strength ? "on" : "" })
+                )
+              )
             )
           )
         )
@@ -751,98 +646,65 @@
   function Experience() {
     return h(
       "section",
-      { id: "experience", className: "section-block experience-section" },
-      h(SectionHeading, {
-        index: "03",
-        eyebrow: "Experience",
-        title: "Research habits with implementation pressure.",
-        copy:
-          "A concise timeline of current applied AI work and the engineering foundation behind it.",
+      { id: "experience", className: "section" },
+      h(SectionHead, {
+        tag: "EXPERIENCE — the log",
+        title: "Research habits under implementation pressure.",
       }),
       h(
         "div",
-        { className: "timeline grid-shell" },
-        experience.map((item, i) =>
+        { className: "log" },
+        experience.map((e) =>
           h(
             "article",
-            { className: "timeline-item", key: item.role, "data-reveal": true },
-            h("time", null, item.date),
+            { className: "log-row", key: e.role, "data-reveal": true },
+            h("time", { className: "log-date" }, e.date),
             h(
               "div",
-              { className: "timeline-body" },
-              h("h3", null, item.role),
-              h("span", { className: "timeline-org" }, item.org),
-              h("p", null, item.body)
-            ),
-            h("span", { className: "timeline-num", "aria-hidden": "true" }, `0${i + 1}`)
+              { className: "log-body" },
+              h("h3", null, e.role),
+              h("span", { className: "log-org" }, e.org),
+              h("p", null, e.body)
+            )
           )
         )
       ),
       h(
         "div",
-        { className: "stack-strip grid-shell", "data-reveal": true },
-        h("span", { className: "stack-label" }, "Stack"),
-        h(
-          "div",
-          { className: "stack-items" },
-          stack.map((item) => h("span", { className: "chip", key: item }, item))
-        )
+        { className: "stack-strip", "data-reveal": true },
+        h("span", { className: "stack-label" }, "STACK"),
+        h("div", { className: "stack-items" }, stack.map((s) => h("span", { className: "tech", key: s }, s)))
       )
     );
   }
 
-  function AgentSkills() {
+  function Agents() {
     return h(
       "section",
-      { id: "agents", className: "section-block agents-section" },
-      h(SectionHeading, {
-        index: "04",
-        eyebrow: "Agent layer",
-        title: "Local skills for design, motion, and interaction quality.",
-        copy:
-          "This repo includes dedicated skills that keep future edits aligned with a minimalist interface standard.",
+      { id: "agents", className: "section" },
+      h(SectionHead, {
+        tag: "AGENTS — local skills",
+        title: "Skills that keep the craft consistent.",
+        copy: "This repo ships design/motion/interaction skills so future edits hold the same standard.",
       }),
       h(
         "div",
-        { className: "agent-grid grid-shell" },
-        agentSkills.map((skill) =>
+        { className: "agent-grid" },
+        agentSkills.map((a) =>
           h(
             "article",
-            { className: "agent-card", key: skill.name, "data-reveal": true, "data-tilt-card": true },
+            { className: "agent-card", key: a.name, "data-reveal": true },
             h(
               "div",
-              { className: "agent-card-top" },
-              h("span", { className: "tag" }, skill.tag),
-              h("code", null, skill.path)
+              { className: "agent-top" },
+              h("span", { className: "agent-tag" }, a.tag),
+              h("code", { className: "agent-path" }, a.path)
             ),
-            h("h3", null, skill.name),
-            h("p", null, skill.body)
+            h("h3", null, a.name),
+            h("p", null, a.body)
           )
         )
       )
-    );
-  }
-
-  function SpotifyPanel() {
-    return h(
-      "aside",
-      { className: "spotify-panel", "data-reveal": true },
-      h(
-        "div",
-        { className: "spotify-copy" },
-        h("span", null, "On rotation"),
-        h("strong", null, "Music while building")
-      ),
-      h("iframe", {
-        title: "Spotify playlist",
-        src: profile.spotify,
-        width: "100%",
-        height: "152",
-        frameBorder: "0",
-        allowFullScreen: true,
-        allow: "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture",
-        loading: "lazy",
-      })
     );
   }
 
@@ -852,93 +714,106 @@
     const [copied, setCopied] = useState(false);
 
     function copyBrief() {
-      const brief = `Topic: ${topic}\n\nContext:\n${note || "Add project context, data sources, constraints, and success metrics."}`;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard
-          .writeText(brief)
-          .then(() => {
-            setCopied(true);
-            window.setTimeout(() => setCopied(false), 1800);
-          })
-          .catch(() => {
-            setCopied(true);
-            window.setTimeout(() => setCopied(false), 1800);
-          });
-      } else {
+      const brief =
+        "Topic: " + topic + "\n\nContext:\n" +
+        (note || "Add project context, data sources, constraints, and success metrics.");
+      const done = () => {
         setCopied(true);
         window.setTimeout(() => setCopied(false), 1800);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(brief).then(done).catch(done);
+      } else {
+        done();
       }
     }
 
     return h(
       "section",
-      { id: "contact", className: "section-block contact-section" },
-      h(SectionHeading, {
-        index: "05",
-        eyebrow: "Contact",
+      { id: "contact", className: "section" },
+      h(SectionHead, {
+        tag: "CONTACT — start here",
         title: "Bring a problem, a dataset, and a metric.",
         copy:
           "The strongest AI projects start with constraints, baselines, and a way to know whether the model actually helped.",
       }),
       h(
         "div",
-        { className: "contact-grid grid-shell" },
+        { className: "contact-grid" },
         h(
           "div",
-          { className: "brief-builder", "data-reveal": true },
+          { className: "brief", "data-reveal": true },
           h(
             "div",
-            { className: "brief-topline" },
-            h("span", null, "Brief builder"),
-            h("span", { className: copied ? "brief-flag is-copied" : "brief-flag" }, copied ? "Copied" : "Local draft")
+            { className: "brief-bar" },
+            h("span", null, "BRIEF BUILDER"),
+            h("span", { className: copied ? "brief-flag on" : "brief-flag" }, copied ? "copied" : "local draft")
           ),
           h(
             "div",
-            { className: "topic-row", role: "tablist", "aria-label": "Brief topic" },
-            contactTopics.map((item) =>
+            { className: "topic-row", role: "tablist", "aria-label": "Topic" },
+            contactTopics.map((t) =>
               h(
                 "button",
                 {
-                  key: item,
+                  key: t,
                   type: "button",
                   role: "tab",
-                  "aria-selected": item === topic,
-                  className: item === topic ? "is-active" : "",
-                  onClick: () => setTopic(item),
+                  "aria-selected": t === topic,
+                  className: t === topic ? "chip-btn is-active" : "chip-btn",
+                  onClick: () => setTopic(t),
                 },
-                item
+                t
               )
             )
           ),
-          h("label", { htmlFor: "brief-note" }, "Project context"),
+          h("label", { className: "brief-label", htmlFor: "brief-note" }, "Project context"),
           h("textarea", {
             id: "brief-note",
             value: note,
-            onChange: (event) => setNote(event.target.value),
-            placeholder:
-              "Data sources, users, constraints, deployment target, evaluation metric, and risks...",
+            onChange: (e) => setNote(e.target.value),
+            placeholder: "Data sources, users, constraints, deployment target, evaluation metric, and risks...",
           }),
           h(
             "button",
-            { className: "button button-primary", type: "button", onClick: copyBrief, "data-magnetic": true },
+            { className: "btn btn-primary", type: "button", onClick: copyBrief },
             copied ? "Copied brief" : "Copy brief",
-            h(Arrow)
+            h("span", { className: "btn-arw", "aria-hidden": "true" }, "→")
           )
         ),
         h(
           "div",
           { className: "contact-side" },
-          h(SpotifyPanel),
+          h(
+            "aside",
+            { className: "music", "data-reveal": true },
+            h(
+              "div",
+              { className: "music-bar" },
+              h("span", null, "ON ROTATION"),
+              h("span", null, "music while building")
+            ),
+            h("iframe", {
+              title: "Spotify playlist",
+              src: profile.spotify,
+              width: "100%",
+              height: "152",
+              frameBorder: "0",
+              allowFullScreen: true,
+              allow: "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture",
+              loading: "lazy",
+            })
+          ),
           h(
             "div",
-            { className: "link-panel", "data-reveal": true },
-            h("span", { className: "link-panel-label" }, "Elsewhere"),
+            { className: "links", "data-reveal": true },
+            h("span", { className: "links-label" }, "ELSEWHERE"),
             profile.links.map(([label, href]) =>
               h(
                 "a",
-                { href, target: "_blank", rel: "noreferrer", key: label, "data-magnetic": true },
+                { key: label, href, target: "_blank", rel: "noreferrer" },
                 h("span", null, label),
-                h(Arrow)
+                h("span", { className: "link-arw", "aria-hidden": "true" }, "↗")
               )
             )
           )
@@ -950,41 +825,156 @@
   function Footer() {
     return h(
       "footer",
-      { className: "site-footer grid-shell" },
+      { className: "footer" },
       h(
         "div",
-        { className: "footer-brand" },
-        h("span", { className: "footer-mark" }, "MR"),
-        h("p", null, `${profile.name} — ${profile.title}`)
-      ),
-      h(
-        "div",
-        { className: "footer-links" },
-        profile.links.map(([label, href]) =>
-          h("a", { href, target: "_blank", rel: "noreferrer", key: label }, label)
-        )
-      ),
-      h("p", { className: "footer-note" }, "Built with a no-build static React setup. © 2026")
+        { className: "footer-inner" },
+        h(
+          "div",
+          { className: "footer-brand" },
+          h("span", { className: "brand-mark", "aria-hidden": "true" }, "MR"),
+          h("span", null, profile.name + " — " + profile.title)
+        ),
+        h(
+          "div",
+          { className: "footer-links" },
+          profile.links.map(([label, href]) =>
+            h("a", { key: label, href, target: "_blank", rel: "noreferrer" }, label)
+          )
+        ),
+        h("span", { className: "footer-note" }, "No-build static React · © 2026")
+      )
     );
   }
 
+  function RuntimeEffects() {
+    useEffect(() => {
+      const root = document.documentElement;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const progress = document.querySelector("[data-progress]");
+      const topbar = document.querySelector(".topbar");
+      const navLinks = Array.from(document.querySelectorAll("[data-nav-link]"));
+      let raf = 0;
+
+      function onScroll() {
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+          const ratio = Math.min(1, window.scrollY / max);
+          if (progress) progress.style.transform = "scaleX(" + ratio.toFixed(4) + ")";
+          if (topbar) topbar.classList.toggle("is-scrolled", window.scrollY > 12);
+        });
+      }
+
+      const reveals = Array.from(document.querySelectorAll("[data-reveal]"));
+      reveals.forEach((n, i) => n.style.setProperty("--rd", (Math.min(i % 5, 4) * 55) + "ms"));
+      const io = new IntersectionObserver(
+        (entries) => entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("is-visible");
+            io.unobserve(e.target);
+          }
+        }),
+        { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }
+      );
+      reveals.forEach((n) => {
+        const r = n.getBoundingClientRect();
+        if (r.top < window.innerHeight && r.bottom > 0) n.classList.add("is-visible");
+        else io.observe(n);
+      });
+
+      const spy = navLinks
+        .map((link) => {
+          const sec = document.getElementById((link.getAttribute("href") || "").replace("#", ""));
+          return sec ? { link, sec } : null;
+        })
+        .filter(Boolean);
+      let spyIo = null;
+      if (spy.length) {
+        spyIo = new IntersectionObserver(
+          (entries) => entries.forEach((e) => {
+            const m = spy.find((t) => t.sec === e.target);
+            if (m && e.isIntersecting) {
+              navLinks.forEach((l) => l.classList.remove("is-current"));
+              m.link.classList.add("is-current");
+            }
+          }),
+          { rootMargin: "-45% 0px -50% 0px" }
+        );
+        spy.forEach((t) => spyIo.observe(t.sec));
+      }
+
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll);
+      return () => {
+        cancelAnimationFrame(raf);
+        io.disconnect();
+        if (spyIo) spyIo.disconnect();
+        window.removeEventListener("scroll", onScroll);
+        window.removeEventListener("resize", onScroll);
+      };
+    }, []);
+    return h("div", { className: "scroll-progress", "data-progress": true });
+  }
+
   function App() {
+    const [theme, toggle] = useTheme();
     return h(
       React.Fragment,
       null,
       h(RuntimeEffects),
-      h(Nav),
+      h(TopBar, { theme, onToggle: toggle }),
       h(
         "main",
         null,
-        h(Hero),
-        h(Marquee),
-        h(ProjectExplorer),
+        h(HeroWithTheme, { theme }),
+        h(Work),
         h(Capabilities),
         h(Experience),
-        h(AgentSkills),
+        h(Agents),
         h(Contact),
         h(Footer)
+      )
+    );
+  }
+
+  // Wrapper so the console redraws its canvas when the theme changes.
+  function HeroWithTheme({ theme }) {
+    return h(
+      "section",
+      { id: "top", className: "hero" },
+      h(
+        "div",
+        { className: "hero-inner" },
+        h(
+          "div",
+          { className: "hero-copy" },
+          h(
+            "p",
+            { className: "hero-meta", "data-reveal": true },
+            h("span", null, profile.title),
+            h("span", { className: "meta-div", "aria-hidden": "true" }, "/"),
+            h("span", null, profile.location)
+          ),
+          h(
+            "h1",
+            { className: "hero-name", "aria-label": profile.name },
+            profile.nameParts.map((part) =>
+              h("span", { key: part, className: "name-line", "data-reveal": true }, part)
+            )
+          ),
+          h("p", { className: "hero-intro", "data-reveal": true }, profile.intro),
+          h("p", { className: "hero-thesis", "data-reveal": true }, profile.thesis),
+          h(
+            "div",
+            { className: "hero-actions", "data-reveal": true },
+            h("a", { className: "btn btn-primary", href: "#work" }, "View work", h("span", { className: "btn-arw", "aria-hidden": "true" }, "→")),
+            h("a", { className: "btn btn-ghost", href: "#contact" }, "Start a brief")
+          )
+        ),
+        h(EvalConsole, { theme })
       )
     );
   }

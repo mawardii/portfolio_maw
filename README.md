@@ -1,6 +1,6 @@
 # Mawardi Rosli Portfolio
 
-A minimalist AI/ML portfolio built on a Swiss editorial grid: warm paper canvas, oversized grotesk headlines, monospaced meta labels, hairline rules, numbered sections, and a single restrained accent. Includes an interactive systems-focus console, a marquee stack ticker, filterable capability directory, project explorer, experience timeline, local design-agent skills, a brief builder, social links, and a Spotify playlist area.
+An AI/ML portfolio with a "Signal" identity — built from the vocabulary of model *evaluation*. Cool graphite ground, a single cobalt signal accent, self-hosted IBM Plex (Sans + Mono) typography, and an instrument-panel layout. Full light and dark themes with a toggle. Includes a live evaluation console (canvas signal/noise trace + pipeline + tracked signals), a project explorer, a capability matrix, an experience log, local design-agent skills, a brief builder, social links, and a Spotify playlist area.
 
 ## Preview
 
@@ -10,19 +10,18 @@ Open `index.html` in a browser, or run the local preview server:
 node scripts/preview.mjs
 ```
 
-Then open `http://127.0.0.1:5173/`. React is vendored locally; internet access is only needed for the Spotify embed.
+Then open `http://127.0.0.1:5173/`. React and the IBM Plex fonts are vendored locally under `vendor/`; internet access is only needed for the Spotify embed.
 
-This site uses no build step. React is loaded through local browser scripts in `vendor/`, and the application lives in `src/app.js` with styles in `src/styles.css`.
+This site uses no build step. React is loaded through local browser scripts in `vendor/`, fonts live in `vendor/fonts/`, and the application lives in `src/app.js` with styles in `src/styles.css`.
 
 ## Sections
 
-- Editorial hero with an interactive systems-focus console
-- Marquee stack ticker
-- Project explorer for RAG, OCR, and optimization work (01)
-- Filterable AI/ML capability directory (02)
-- Experience timeline and technical stack (03)
-- Local design-agent skill cards (04)
-- Contact brief builder, music / Spotify, and social links (05)
+- Hero with a live evaluation console (canvas signal trace, pipeline, tracked signals)
+- Project explorer for RAG, OCR, and optimization work
+- Capability matrix with area filters and relative-depth bars
+- Experience log and technical stack
+- Local design-agent skill cards
+- Contact brief builder, music / Spotify, and social links
 - Footer
 
 ## Local Skills
