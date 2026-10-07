@@ -1,150 +1,56 @@
 (function () {
   const h = React.createElement;
-  const { useEffect, useState, useRef, useCallback } = React;
+  const { useEffect, useState, useCallback, useRef } = React;
+
+  const reduceMotion =
+    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Reveal styles only apply under .motion, so content is visible without JS or with reduced motion.
+  if (!reduceMotion) document.documentElement.classList.add("motion");
 
   const profile = {
     name: "Mawardi Rosli",
-    nameParts: ["MAWARDI", "ROSLI"],
-    title: "AI/ML Research Officer",
-    location: "Malaysia",
-    available: "Open to applied AI briefs",
-    intro:
-      "I build evaluated AI workflows across Generative AI, RAG, OCR, computer vision, and model optimization.",
-    thesis:
-      "My work sits between research prototypes and usable systems: clean interfaces, traceable model behavior, and practical evaluation loops.",
-    spotify:
-      "https://open.spotify.com/embed/playlist/1w3FcOORBfn6fLcfU2rwV3?utm_source=generator",
     links: [
       ["LinkedIn", "https://www.linkedin.com/in/mawardi-rosli-04b299334"],
       ["GitHub", "https://github.com/mawardii"],
     ],
   };
 
-  const nav = [
-    ["Work", "#work"],
-    ["Capabilities", "#capabilities"],
-    ["Experience", "#experience"],
-    ["Agents", "#agents"],
-    ["Contact", "#contact"],
+  const facts = [
+    ["Role", "AI/ML Research Officer, MIMOS Berhad"],
+    ["Focus", "Generative AI, RAG, OCR, computer vision, model optimization"],
+    ["Based in", "Malaysia"],
   ];
 
-  // Each mode carries the pipeline stages and the signals actually checked —
-  // no fabricated benchmark numbers, only the measurement surface itself.
-  const consoleModes = [
-    {
-      id: "rag",
-      label: "RAG",
-      subtitle: "Grounded retrieval",
-      copy: "Grounded answers over private knowledge with traceable evidence.",
-      steps: ["Ingest", "Chunk", "Retrieve", "Rerank", "Ground", "Evaluate"],
-      signals: ["Grounding", "Citation coverage", "Refusal behavior"],
-    },
-    {
-      id: "ocr",
-      label: "OCR",
-      subtitle: "Visual text",
-      copy: "Visual text pipelines with cleaner downstream structure.",
-      steps: ["Scan", "Detect", "Extract", "Normalize", "Validate"],
-      signals: ["Extraction review", "Dataset slices", "Post-processing"],
-    },
-    {
-      id: "vision",
-      label: "Vision",
-      subtitle: "Measured CV",
-      copy: "Computer vision experiments that are measured, not guessed.",
-      steps: ["Frame", "Label", "Train", "Inspect", "Improve"],
-      signals: ["Failure cases", "Annotation review", "Preprocessing"],
-    },
-    {
-      id: "opt",
-      label: "Optimize",
-      subtitle: "Inference-aware",
-      copy: "Inference-minded iteration for smaller, steadier models.",
-      steps: ["Baseline", "Profile", "Compress", "Benchmark", "Ship"],
-      signals: ["Baselines", "Latency notes", "Tradeoff log"],
-    },
-  ];
-
-  const capabilities = [
-    {
-      title: "RAG System Design",
-      category: "Retrieval",
-      level: "Core",
-      strength: 5,
-      body:
-        "Chunking, metadata, retrieval strategy, reranking, grounding, refusal behavior, and evaluation set design.",
-    },
-    {
-      title: "Generative AI Workflows",
-      category: "Generation",
-      level: "Core",
-      strength: 5,
-      body:
-        "LLM application flows that combine prompt design, tool use, grounding, and user-facing review states.",
-    },
-    {
-      title: "OCR Fine-tuning",
-      category: "Vision",
-      level: "Active",
-      strength: 4,
-      body:
-        "Domain-specific visual text extraction with model checks and cleaner downstream document structure.",
-    },
-    {
-      title: "Computer Vision",
-      category: "Vision",
-      level: "Applied",
-      strength: 4,
-      body:
-        "Image preprocessing, model experimentation, annotation review, and measured failure analysis.",
-    },
-    {
-      title: "AI Evaluation",
-      category: "Evaluation",
-      level: "Habit",
-      strength: 5,
-      body:
-        "Baselines, test sets, failure cases, acceptance thresholds, and regression checks before quality claims.",
-    },
-    {
-      title: "Model Optimization",
-      category: "Optimization",
-      level: "Lab",
-      strength: 3,
-      body:
-        "Inference-aware experiments around benchmarking, lighter models, and practical deployment tradeoffs.",
-    },
-  ];
-
+  // Order matters: the hero statement footnotes these by position (1, 2, 3).
   const projects = [
     {
-      code: "RAG",
+      id: "rag",
       title: "Document Intelligence RAG",
-      type: "LLM Systems",
+      type: "LLM systems",
       status: "Active prototype",
       year: "2026",
       problem:
         "Make document answers easier to inspect by connecting retrieval evidence, response grounding, and evaluation notes.",
       method:
         "Structured ingestion, metadata-aware retrieval, answer generation, refusal behavior, and manual failure review.",
-      stack: ["Python", "LLMs", "RAG", "Vector Search", "Evaluation"],
-      signals: ["Grounding checks", "Citation coverage", "Failure cases"],
+      checks: "Grounding, citation coverage, failure cases",
+      stack: "Python, LLMs, vector search",
     },
     {
-      code: "OCR",
+      id: "ocr",
       title: "OCR Fine-tuning Workflow",
-      type: "Computer Vision",
+      type: "Computer vision",
       status: "Research build",
       year: "2026",
       problem:
         "Improve visual text extraction for domain documents where raw OCR output needs stronger structure and validation.",
       method:
         "Dataset review, preprocessing, model iteration, extraction checks, and normalization for downstream use.",
-      stack: ["Python", "OpenCV", "OCR", "CV", "Jupyter"],
-      signals: ["Extraction review", "Dataset slices", "Post-processing"],
+      checks: "Extraction review, dataset slices, post-processing",
+      stack: "Python, OpenCV, Jupyter",
     },
     {
-      code: "OPT",
+      id: "opt",
       title: "Model Optimization Lab",
       type: "Inference",
       status: "Experiment track",
@@ -153,8 +59,8 @@
         "Compare model behavior under real constraints instead of choosing architectures from benchmark headlines alone.",
       method:
         "Baseline measurement, latency notes, accuracy tradeoff review, and deployment-minded experiment tracking.",
-      stack: ["Python", "Benchmarking", "Deep Learning", "Docker"],
-      signals: ["Baselines", "Latency notes", "Tradeoff log"],
+      checks: "Baselines, latency, accuracy tradeoffs",
+      stack: "Python, deep learning, Docker",
     },
   ];
 
@@ -163,62 +69,85 @@
       date: "Present",
       role: "Research Officer",
       org: "MIMOS Berhad",
-      body:
-        "Applied AI research across LLM workflows, computer vision, and end-to-end pipeline development.",
+      body: "Applied AI research across LLM workflows, computer vision, and end-to-end pipeline development.",
     },
     {
-      date: "Current",
-      role: "RAG / OCR Builder",
-      org: "Independent Projects",
-      body:
-        "Building retrieval assistants, OCR workflows, and evaluation loops for document intelligence.",
+      date: "Ongoing",
+      role: "RAG and OCR builder",
+      org: "Independent projects",
+      body: "Retrieval assistants, OCR workflows, and evaluation loops for document intelligence.",
     },
     {
-      date: "Foundation",
+      date: "Degree",
       role: "Intelligent Systems Engineering",
       org: "Graduate",
-      body:
-        "Technical grounding in AI systems, automation, data processing, and applied engineering.",
+      body: "Grounding in AI systems, automation, data processing, and applied engineering.",
     },
   ];
 
-  const agentSkills = [
-    {
-      name: "iOS Interface Craft",
-      tag: "Interface",
-      body:
-        "Guides premium minimalist layouts, hierarchy, typography, spacing, accessibility, and evidence-first portfolio design.",
-      path: ".agents/skills/ios-interface-craft",
-    },
-    {
-      name: "Motion Polish Review",
-      tag: "Motion",
-      body:
-        "Sets timing, easing, reduced-motion, and performance checks so animation feels subtle and useful.",
-      path: ".agents/skills/motion-polish-review",
-    },
-    {
-      name: "Interactive Portfolio Systems",
-      tag: "Interaction",
-      body:
-        "Shapes filters, project explorers, case-study panels, and AI evidence dashboards in the no-build React app.",
-      path: ".agents/skills/interactive-portfolio-systems",
-    },
-    {
-      name: "Portfolio Static Site",
-      tag: "Runtime",
-      body:
-        "Keeps future work aligned with this repository's static React setup, preview flow, and verification rules.",
-      path: ".agents/skills/portfolio-static-site",
-    },
+  const capabilities = [
+    ["RAG system design", "Chunking, metadata, retrieval, reranking, grounding, refusal behavior, and eval sets."],
+    ["Generative AI workflows", "Prompt design, tool use, grounding, and review states people can act on."],
+    ["AI evaluation", "Baselines, test sets, failure cases, and regression checks before quality claims."],
+    ["OCR fine-tuning", "Domain text extraction with model checks and cleaner document structure."],
+    ["Computer vision", "Preprocessing, experiments, annotation review, and measured failure analysis."],
+    ["Model optimization", "Benchmarking, lighter models, and practical deployment tradeoffs."],
   ];
 
-  const stack = [
-    "Python", "NumPy", "Pandas", "OpenCV", "LLMs", "RAG",
-    "Deep Learning", "FastAPI", "Flask", "Docker", "PostgreSQL", "Jupyter",
-  ];
+  const stack =
+    "Python, NumPy, Pandas, OpenCV, deep learning, LLMs, RAG, FastAPI, Flask, Docker, PostgreSQL, Jupyter";
 
-  const contactTopics = ["RAG system", "OCR pipeline", "Computer vision", "Model evaluation"];
+  // Hero: "I build AI that" + one of these, typed out and swapped in turn.
+  const phrases = ["reads documents.", "answers with evidence.", "sees what matters.", "runs on less."];
+
+  // Sections below stay hidden until they have real entries.
+  // { name, issuer, year?, url? } in display order: Microsoft, Google, RapidMiner.
+  const certifications = [
+    {
+      name: "Azure AI Apps and Agents Developer Associate",
+      issuer: "Microsoft Certified",
+      year: "2026",
+      url: "https://learn.microsoft.com/api/credentials/share/en-gb/mawardii/ABB0F0C97FC38154?sharingId=E55ED9F81644BC2B",
+    },
+    {
+      name: "AI Transformation Leader",
+      issuer: "Microsoft Certified",
+      year: "2026",
+      url: "https://learn.microsoft.com/api/credentials/share/en-gb/mawardii/DA6F70B76EA38D0F?sharingId=E55ED9F81644BC2B",
+    },
+    {
+      name: "Azure AI Fundamentals",
+      issuer: "Microsoft Certified",
+      year: "2026",
+      url: "https://learn.microsoft.com/api/credentials/share/en-gb/mawardii/169C818092643BB9?sharingId=E55ED9F81644BC2B",
+    },
+    {
+      name: "Google Advanced Data Analytics",
+      issuer: "Google Professional Certificate, Coursera",
+      year: "2026",
+      url: "https://coursera.org/verify/professional-cert/PTU8AKIFOOE5",
+    },
+    { name: "Machine Learning Master", issuer: "RapidMiner (Altair)", year: "2025" },
+    { name: "Machine Learning Professional", issuer: "RapidMiner (Altair)", year: "2025" },
+  ];
+  // { title, authors?, venue, year, url? }
+  const publications = [
+    {
+      title:
+        "A Comparative Parameter Optimization Study of YOLOv8, YOLOv9, and YOLOv10 for Automated Pavement Distress Classification in Post-Disaster Emergency Infrastructure Assessment",
+      authors: "M. Rosli et al.",
+      venue: "Journal of Theoretical and Applied Information Technology, Vol. 104, No. 18, pp. 381–390",
+      year: "2026",
+      url: "https://www.jatit.org/volumes/Vol104No18/24Vol104No18.pdf",
+    },
+    {
+      title: "Fine Tuning a Vision Language Model for Diacritic Complete Uthmani Quranic OCR",
+      venue: "Presented at IICAIET 2026, Sabah. Publication in progress",
+      year: "2026",
+    },
+  ];
+  // ["Interest", ...]
+  const interests = ["Agentic AI in production", "Inference engineering", "Building with Claude Code and Codex", "Cloud AI solutions"];
 
   // ---- Theme ----------------------------------------------------------------
   function getInitialTheme() {
@@ -243,739 +172,652 @@
     return [theme, toggle];
   }
 
-  // ---- Small building blocks ------------------------------------------------
-  function Coord({ text }) {
-    return h("span", { className: "coord" }, text);
-  }
+  // ---- Pieces ---------------------------------------------------------------
 
-  function SectionHead({ tag, title, copy }) {
-    return h(
-      "div",
-      { className: "sec-head", "data-reveal": true },
-      h(Coord, { text: tag }),
-      h("h2", { className: "sec-title" }, title),
-      copy && h("p", { className: "sec-copy" }, copy)
-    );
-  }
-
-  // Seeded signal trace on a canvas — a "signal / noise" motif, decorative,
-  // redrawn per mode and per theme.
-  function SignalCanvas({ seed, theme, active }) {
-    const ref = useRef(null);
-    useEffect(() => {
-      const canvas = ref.current;
-      if (!canvas) return;
-      let raf = 0;
-      const reduce =
-        window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-      function draw() {
-        const ctx = canvas.getContext("2d");
-        const dpr = Math.min(2, window.devicePixelRatio || 1);
-        const rect = canvas.getBoundingClientRect();
-        const w = Math.max(1, rect.width);
-        const hh = Math.max(1, rect.height);
-        canvas.width = Math.round(w * dpr);
-        canvas.height = Math.round(hh * dpr);
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        ctx.clearRect(0, 0, w, hh);
-
-        const styles = getComputedStyle(document.documentElement);
-        const signal = (styles.getPropertyValue("--signal") || "#2438e0").trim();
-        const line = (styles.getPropertyValue("--line") || "rgba(0,0,0,0.1)").trim();
-
-        // faint grid
-        ctx.strokeStyle = line;
-        ctx.lineWidth = 1;
-        const cols = 8;
-        for (let i = 1; i < cols; i++) {
-          const x = (w / cols) * i;
-          ctx.beginPath();
-          ctx.moveTo(x, 0);
-          ctx.lineTo(x, hh);
-          ctx.stroke();
-        }
-        ctx.beginPath();
-        ctx.moveTo(0, hh / 2);
-        ctx.lineTo(w, hh / 2);
-        ctx.stroke();
-
-        // seeded points: noise settling toward signal on the right
-        const N = 52;
-        let s = seed * 9301 + 49297;
-        const rnd = () => {
-          s = (s * 9301 + 49297) % 233280;
-          return s / 233280;
-        };
-        const pts = [];
-        for (let i = 0; i < N; i++) {
-          const t = i / (N - 1);
-          const noise = (rnd() - 0.5) * (1 - t) * 1.15;
-          const base = Math.sin(t * Math.PI * 2.2 + seed) * 0.32 * (0.4 + t * 0.6);
-          const y = hh / 2 - (base + noise) * (hh * 0.34);
-          pts.push([t * w, y]);
-        }
-
-        const drawUpTo = (count) => {
-          ctx.clearRect(0, 0, w, hh);
-          // regrid
-          ctx.strokeStyle = line;
-          ctx.lineWidth = 1;
-          for (let i = 1; i < cols; i++) {
-            const x = (w / cols) * i;
-            ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, hh);
-            ctx.stroke();
-          }
-          ctx.beginPath();
-          ctx.moveTo(0, hh / 2);
-          ctx.lineTo(w, hh / 2);
-          ctx.stroke();
-
-          const n = Math.max(2, count);
-          // area fill
-          const grad = ctx.createLinearGradient(0, 0, 0, hh);
-          grad.addColorStop(0, hexA(signal, 0.22));
-          grad.addColorStop(1, hexA(signal, 0));
-          ctx.beginPath();
-          ctx.moveTo(pts[0][0], hh);
-          for (let i = 0; i < n; i++) ctx.lineTo(pts[i][0], pts[i][1]);
-          ctx.lineTo(pts[n - 1][0], hh);
-          ctx.closePath();
-          ctx.fillStyle = grad;
-          ctx.fill();
-          // line
-          ctx.beginPath();
-          ctx.moveTo(pts[0][0], pts[0][1]);
-          for (let i = 1; i < n; i++) ctx.lineTo(pts[i][0], pts[i][1]);
-          ctx.strokeStyle = signal;
-          ctx.lineWidth = 2;
-          ctx.lineJoin = "round";
-          ctx.stroke();
-          // emphasized endpoint
-          const [ex, ey] = pts[n - 1];
-          ctx.beginPath();
-          ctx.arc(ex, ey, 3.4, 0, Math.PI * 2);
-          ctx.fillStyle = signal;
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(ex, ey, 6.5, 0, Math.PI * 2);
-          ctx.strokeStyle = hexA(signal, 0.35);
-          ctx.stroke();
-        };
-
-        if (reduce || !active) {
-          drawUpTo(N);
-          return;
-        }
-        let count = 2;
-        const step = () => {
-          drawUpTo(count);
-          count += 2;
-          if (count <= N) raf = requestAnimationFrame(step);
-        };
-        raf = requestAnimationFrame(step);
-      }
-
-      function hexA(hex, a) {
-        const c = hex.replace("#", "");
-        if (c.length < 6) return `rgba(36,56,224,${a})`;
-        const r = parseInt(c.slice(0, 2), 16);
-        const g = parseInt(c.slice(2, 4), 16);
-        const b = parseInt(c.slice(4, 6), 16);
-        return `rgba(${r},${g},${b},${a})`;
-      }
-
-      draw();
-      const onResize = () => draw();
-      window.addEventListener("resize", onResize);
-      return () => {
-        cancelAnimationFrame(raf);
-        window.removeEventListener("resize", onResize);
-      };
-    }, [seed, theme, active]);
-
-    return h("canvas", { className: "signal-canvas", ref, "aria-hidden": "true" });
-  }
-
-  function EvalConsole({ theme }) {
-    const [idx, setIdx] = useState(0);
-    const mode = consoleModes[idx];
-    return h(
-      "aside",
-      { className: "console", "data-reveal": true, "aria-label": "Evaluation console" },
-      h(
-        "div",
-        { className: "console-bar" },
-        h("span", { className: "console-title" }, "EVAL CONSOLE"),
-        h("span", { className: "console-live" }, h("i", { className: "live-dot", "aria-hidden": "true" }), "tracking")
-      ),
-      h(
-        "div",
-        { className: "console-tabs", role: "tablist", "aria-label": "Systems" },
-        consoleModes.map((m, i) =>
-          h(
-            "button",
-            {
-              key: m.id,
-              type: "button",
-              role: "tab",
-              "aria-selected": i === idx,
-              className: i === idx ? "console-tab is-active" : "console-tab",
-              onClick: () => setIdx(i),
-            },
-            m.label
-          )
-        )
-      ),
-      h(
-        "div",
-        { className: "console-screen" },
-        h(SignalCanvas, { seed: idx + 3, theme, active: true }),
-        h("span", { className: "screen-tag" }, "SIGNAL / NOISE")
-      ),
-      h(
-        "div",
-        { className: "console-readout" },
-        h("p", { className: "readout-copy" }, mode.copy),
-        h(
-          "ol",
-          { className: "pipeline", key: mode.id, "aria-label": mode.label + " pipeline" },
-          mode.steps.map((step, i) =>
-            h(
-              "li",
-              { key: step, className: "pipe-step", style: { "--i": String(i) } },
-              h("span", { className: "pipe-dot", "aria-hidden": "true" }),
-              step
-            )
-          )
-        ),
-        h(
-          "div",
-          { className: "readout-signals" },
-          h("span", { className: "signals-label" }, "signals"),
-          h(
-            "div",
-            { className: "signals-list" },
-            mode.signals.map((sgnl) => h("span", { className: "sig", key: sgnl }, sgnl))
-          )
-        )
-      )
-    );
-  }
-
-  function ThemeToggle({ theme, onToggle }) {
-    return h(
-      "button",
-      {
-        type: "button",
-        className: "theme-toggle",
-        onClick: onToggle,
-        "aria-label": "Toggle color theme",
-        title: "Toggle theme",
-      },
-      h("span", { className: "tt-track", "aria-hidden": "true" }, h("span", { className: "tt-knob" })),
-      h("span", { className: "tt-label" }, theme === "dark" ? "DARK" : "LIGHT")
-    );
-  }
-
-  function TopBar({ theme, onToggle }) {
-    return h(
-      "header",
-      { className: "topbar" },
-      h(
-        "a",
-        { className: "brand", href: "#top" },
-        h("span", { className: "brand-mark", "aria-hidden": "true" }, "MR"),
-        h("span", { className: "brand-name" }, "MAWARDI—ROSLI")
-      ),
-      h(
-        "nav",
-        { className: "nav", "aria-label": "Primary" },
-        nav.map(([label, href]) =>
-          h("a", { key: href, href, "data-nav-link": true }, label)
-        )
-      ),
-      h(
-        "div",
-        { className: "topbar-right" },
-        h(ThemeToggle, { theme, onToggle })
-      )
-    );
-  }
-
-  function Work() {
-    const [i, setI] = useState(0);
-    const p = projects[i];
-    return h(
-      "section",
-      { id: "work", className: "section" },
-      h(SectionHead, {
-        tag: "WORK — selected systems",
-        title: "Projects, with the evidence kept close.",
-        copy:
-          "Each study names the problem, the method, and the signals I actually check — not headline claims.",
-      }),
-      h(
-        "div",
-        { className: "work-grid" },
-        h(
-          "div",
-          { className: "work-list", role: "tablist", "aria-label": "Projects", "data-reveal": true },
-          projects.map((proj, index) =>
-            h(
-              "button",
-              {
-                key: proj.code,
-                type: "button",
-                role: "tab",
-                "aria-selected": index === i,
-                className: index === i ? "work-item is-active" : "work-item",
-                onClick: () => setI(index),
-              },
-              h("span", { className: "work-code" }, proj.code),
-              h(
-                "span",
-                { className: "work-item-body" },
-                h("strong", null, proj.title),
-                h("em", null, proj.type)
-              ),
-              h("span", { className: "work-status", "data-status": proj.status }, proj.status)
-            )
-          )
-        ),
-        h(
-          "article",
-          { className: "work-detail", "data-reveal": true },
-          h(
-            "div",
-            { className: "detail-top" },
-            h("span", { className: "detail-code" }, p.code),
-            h(
-              "div",
-              { className: "detail-meta" },
-              h("span", null, p.type),
-              h("span", null, p.year),
-              h("span", { className: "detail-status" }, p.status)
-            )
-          ),
-          h("h3", { className: "detail-title" }, p.title),
-          h(
-            "div",
-            { className: "detail-body" },
-            h("div", { className: "field" }, h("span", { className: "field-key" }, "PROBLEM"), h("p", null, p.problem)),
-            h("div", { className: "field" }, h("span", { className: "field-key" }, "METHOD"), h("p", null, p.method))
-          ),
-          h(
-            "div",
-            { className: "detail-foot" },
-            h(
-              "div",
-              { className: "signals-tiles" },
-              p.signals.map((sgnl) => h("span", { className: "tile", key: sgnl }, sgnl))
-            ),
-            h(
-              "div",
-              { className: "stack-row" },
-              p.stack.map((tech) => h("span", { className: "tech", key: tech }, tech))
-            )
-          )
-        )
-      )
-    );
-  }
-
-  function Capabilities() {
-    const categories = ["All"].concat(Array.from(new Set(capabilities.map((c) => c.category))));
-    const [filter, setFilter] = useState("All");
-    const visible = filter === "All" ? capabilities : capabilities.filter((c) => c.category === filter);
-    return h(
-      "section",
-      { id: "capabilities", className: "section" },
-      h(SectionHead, {
-        tag: "CAPABILITIES — measured skills",
-        title: "A working matrix for intelligent systems.",
-        copy: "Filter by area. The bar shows relative depth, not a score.",
-      }),
-      h(
-        "div",
-        { className: "filter-row", role: "tablist", "aria-label": "Filter", "data-reveal": true },
-        categories.map((cat) =>
-          h(
-            "button",
-            {
-              key: cat,
-              type: "button",
-              role: "tab",
-              "aria-selected": cat === filter,
-              className: cat === filter ? "chip-btn is-active" : "chip-btn",
-              onClick: () => setFilter(cat),
-            },
-            cat
-          )
-        )
-      ),
-      h(
-        "div",
-        { className: "cap-matrix" },
-        visible.map((c) =>
-          h(
-            "article",
-            { className: "cap-row", key: c.title, "data-reveal": true },
-            h("div", { className: "cap-main" }, h("h3", null, c.title), h("p", null, c.body)),
-            h(
-              "div",
-              { className: "cap-side" },
-              h("span", { className: "cap-cat" }, c.category),
-              h("span", { className: "cap-level" }, c.level),
-              h(
-                "span",
-                { className: "cap-bar", "aria-hidden": "true" },
-                Array.from({ length: 5 }).map((_, k) =>
-                  h("i", { key: k, className: k < c.strength ? "on" : "" })
-                )
-              )
-            )
-          )
-        )
-      )
-    );
-  }
-
-  function Experience() {
-    return h(
-      "section",
-      { id: "experience", className: "section" },
-      h(SectionHead, {
-        tag: "EXPERIENCE — the log",
-        title: "Research habits under implementation pressure.",
-      }),
-      h(
-        "div",
-        { className: "log" },
-        experience.map((e) =>
-          h(
-            "article",
-            { className: "log-row", key: e.role, "data-reveal": true },
-            h("time", { className: "log-date" }, e.date),
-            h(
-              "div",
-              { className: "log-body" },
-              h("h3", null, e.role),
-              h("span", { className: "log-org" }, e.org),
-              h("p", null, e.body)
-            )
-          )
-        )
-      ),
-      h(
-        "div",
-        { className: "stack-strip", "data-reveal": true },
-        h("span", { className: "stack-label" }, "STACK"),
-        h("div", { className: "stack-items" }, stack.map((s) => h("span", { className: "tech", key: s }, s)))
-      )
-    );
-  }
-
-  function Agents() {
-    return h(
-      "section",
-      { id: "agents", className: "section" },
-      h(SectionHead, {
-        tag: "AGENTS — local skills",
-        title: "Skills that keep the craft consistent.",
-        copy: "This repo ships design/motion/interaction skills so future edits hold the same standard.",
-      }),
-      h(
-        "div",
-        { className: "agent-grid" },
-        agentSkills.map((a) =>
-          h(
-            "article",
-            { className: "agent-card", key: a.name, "data-reveal": true },
-            h(
-              "div",
-              { className: "agent-top" },
-              h("span", { className: "agent-tag" }, a.tag),
-              h("code", { className: "agent-path" }, a.path)
-            ),
-            h("h3", null, a.name),
-            h("p", null, a.body)
-          )
-        )
-      )
-    );
-  }
-
-  function Contact() {
-    const [topic, setTopic] = useState(contactTopics[0]);
-    const [note, setNote] = useState("");
-    const [copied, setCopied] = useState(false);
-
-    function copyBrief() {
-      const brief =
-        "Topic: " + topic + "\n\nContext:\n" +
-        (note || "Add project context, data sources, constraints, and success metrics.");
-      const done = () => {
-        setCopied(true);
-        window.setTimeout(() => setCopied(false), 1800);
-      };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(brief).then(done).catch(done);
-      } else {
-        done();
-      }
-    }
-
-    return h(
-      "section",
-      { id: "contact", className: "section" },
-      h(SectionHead, {
-        tag: "CONTACT — start here",
-        title: "Bring a problem, a dataset, and a metric.",
-        copy:
-          "The strongest AI projects start with constraints, baselines, and a way to know whether the model actually helped.",
-      }),
-      h(
-        "div",
-        { className: "contact-grid" },
-        h(
-          "div",
-          { className: "brief", "data-reveal": true },
-          h(
-            "div",
-            { className: "brief-bar" },
-            h("span", null, "BRIEF BUILDER"),
-            h("span", { className: copied ? "brief-flag on" : "brief-flag" }, copied ? "copied" : "local draft")
-          ),
-          h(
-            "div",
-            { className: "topic-row", role: "tablist", "aria-label": "Topic" },
-            contactTopics.map((t) =>
-              h(
-                "button",
-                {
-                  key: t,
-                  type: "button",
-                  role: "tab",
-                  "aria-selected": t === topic,
-                  className: t === topic ? "chip-btn is-active" : "chip-btn",
-                  onClick: () => setTopic(t),
-                },
-                t
-              )
-            )
-          ),
-          h("label", { className: "brief-label", htmlFor: "brief-note" }, "Project context"),
-          h("textarea", {
-            id: "brief-note",
-            value: note,
-            onChange: (e) => setNote(e.target.value),
-            placeholder: "Data sources, users, constraints, deployment target, evaluation metric, and risks...",
-          }),
-          h(
-            "button",
-            { className: "btn btn-primary", type: "button", onClick: copyBrief },
-            copied ? "Copied brief" : "Copy brief",
-            h("span", { className: "btn-arw", "aria-hidden": "true" }, "→")
-          )
-        ),
-        h(
-          "div",
-          { className: "contact-side" },
-          h(
-            "aside",
-            { className: "music", "data-reveal": true },
-            h(
-              "div",
-              { className: "music-bar" },
-              h("span", null, "ON ROTATION"),
-              h("span", null, "music while building")
-            ),
-            h("iframe", {
-              title: "Spotify playlist",
-              src: profile.spotify,
-              width: "100%",
-              height: "152",
-              frameBorder: "0",
-              allowFullScreen: true,
-              allow: "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture",
-              loading: "lazy",
-            })
-          ),
-          h(
-            "div",
-            { className: "links", "data-reveal": true },
-            h("span", { className: "links-label" }, "ELSEWHERE"),
-            profile.links.map(([label, href]) =>
-              h(
-                "a",
-                { key: label, href, target: "_blank", rel: "noreferrer" },
-                h("span", null, label),
-                h("span", { className: "link-arw", "aria-hidden": "true" }, "↗")
-              )
-            )
-          )
-        )
-      )
-    );
-  }
-
-  function Footer() {
-    return h(
-      "footer",
-      { className: "footer" },
-      h(
-        "div",
-        { className: "footer-inner" },
-        h(
-          "div",
-          { className: "footer-brand" },
-          h("span", { className: "brand-mark", "aria-hidden": "true" }, "MR"),
-          h("span", null, profile.name + " — " + profile.title)
-        ),
-        h(
-          "div",
-          { className: "footer-links" },
-          profile.links.map(([label, href]) =>
-            h("a", { key: label, href, target: "_blank", rel: "noreferrer" }, label)
-          )
-        ),
-        h("span", { className: "footer-note" }, "No-build static React · © 2026")
-      )
-    );
-  }
-
-  function RuntimeEffects() {
-    useEffect(() => {
-      const root = document.documentElement;
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-      const progress = document.querySelector("[data-progress]");
-      const topbar = document.querySelector(".topbar");
-      const navLinks = Array.from(document.querySelectorAll("[data-nav-link]"));
-      let raf = 0;
-
-      function onScroll() {
-        if (raf) return;
-        raf = requestAnimationFrame(() => {
-          raf = 0;
-          const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-          const ratio = Math.min(1, window.scrollY / max);
-          if (progress) progress.style.transform = "scaleX(" + ratio.toFixed(4) + ")";
-          if (topbar) topbar.classList.toggle("is-scrolled", window.scrollY > 12);
-        });
-      }
-
-      const reveals = Array.from(document.querySelectorAll("[data-reveal]"));
-      reveals.forEach((n, i) => n.style.setProperty("--rd", (Math.min(i % 5, 4) * 55) + "ms"));
-      const io = new IntersectionObserver(
-        (entries) => entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add("is-visible");
-            io.unobserve(e.target);
-          }
-        }),
-        { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }
-      );
-      reveals.forEach((n) => {
-        const r = n.getBoundingClientRect();
-        if (r.top < window.innerHeight && r.bottom > 0) n.classList.add("is-visible");
-        else io.observe(n);
-      });
-
-      const spy = navLinks
-        .map((link) => {
-          const sec = document.getElementById((link.getAttribute("href") || "").replace("#", ""));
-          return sec ? { link, sec } : null;
-        })
-        .filter(Boolean);
-      let spyIo = null;
-      if (spy.length) {
-        spyIo = new IntersectionObserver(
-          (entries) => entries.forEach((e) => {
-            const m = spy.find((t) => t.sec === e.target);
-            if (m && e.isIntersecting) {
-              navLinks.forEach((l) => l.classList.remove("is-current"));
-              m.link.classList.add("is-current");
-            }
-          }),
-          { rootMargin: "-45% 0px -50% 0px" }
-        );
-        spy.forEach((t) => spyIo.observe(t.sec));
-      }
-
-      onScroll();
-      window.addEventListener("scroll", onScroll, { passive: true });
-      window.addEventListener("resize", onScroll);
-      return () => {
-        cancelAnimationFrame(raf);
-        io.disconnect();
-        if (spyIo) spyIo.disconnect();
-        window.removeEventListener("scroll", onScroll);
-        window.removeEventListener("resize", onScroll);
-      };
-    }, []);
-    return h("div", { className: "scroll-progress", "data-progress": true });
-  }
-
-  function App() {
-    const [theme, toggle] = useTheme();
+  // Splits text into masked word spans; useReveals assigns each word its line (--l) and order (--i).
+  function Words({ text }) {
+    const words = text.trim().split(/\s+/);
     return h(
       React.Fragment,
       null,
-      h(RuntimeEffects),
-      h(TopBar, { theme, onToggle: toggle }),
+      /^\s/.test(text) ? " " : null,
+      words.map((w, i) =>
+        h(React.Fragment, { key: i }, h("span", { className: "w" }, h("span", null, w)), i < words.length - 1 ? " " : null)
+      ),
+      /\s$/.test(text) ? " " : null
+    );
+  }
+
+  // title = [sans line, italic serif line], e.g. ["Selected", "projects."]
+  function Section({ id, title, wide, children }) {
+    return h(
+      "section",
+      { id, className: wide ? "section is-wide" : "section", "aria-labelledby": id + "-title", "data-reveal": "rule" },
       h(
-        "main",
-        null,
-        h(HeroWithTheme, { theme }),
-        h(Work),
-        h(Capabilities),
-        h(Experience),
-        h(Agents),
-        h(Contact),
-        h(Footer)
+        "h2",
+        { className: "section-title", id: id + "-title", "data-reveal": "lines" },
+        h("span", { className: "t-sans" }, h(Words, { text: title[0] })),
+        " ",
+        h("span", { className: "t-serif" }, h(Words, { text: title[1] }))
+      ),
+      h("div", { className: "section-body" }, children)
+    );
+  }
+
+  function TopBar() {
+    const [theme, toggle] = useTheme();
+    // After the first screenful of scrolling the bar tucks into a floating pill.
+    const [pill, setPill] = useState(false);
+    useEffect(() => {
+      const onScroll = () => setPill(window.scrollY > 80);
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+      return () => window.removeEventListener("scroll", onScroll);
+    }, []);
+    return h(
+      "header",
+      { className: pill ? "topbar is-pill" : "topbar" },
+      h("a", { className: "brand", href: "#top" }, profile.name),
+      h(
+        "nav",
+        { className: "nav", "aria-label": "Primary" },
+        h("a", { href: "#experience" }, "Experience"),
+        h("a", { href: "#projects" }, "Projects"),
+        h("a", { href: "#contact" }, "Contact"),
+        h(
+          "button",
+          { type: "button", className: "theme-toggle", onClick: toggle, "aria-label": "Switch to " + (theme === "dark" ? "light" : "dark") + " theme" },
+          theme === "dark" ? "Light" : "Dark"
+        )
       )
     );
   }
 
-  // Wrapper so the console redraws its canvas when the theme changes.
-  function HeroWithTheme({ theme }) {
+  // Hero field: a 3D "embedding space". Points sit in topic clusters on a slowly
+  // turning cloud; drag to spin it (it keeps some momentum). Each time the
+  // headline phrase changes, a query point appears and links to its nearest
+  // neighbours, the way vector search picks evidence for a RAG answer.
+  function EmbeddingField({ pulse }) {
+    const ref = useRef(null);
+    useEffect(() => {
+      const canvas = ref.current;
+      const stage = canvas.parentElement;
+      const ctx = canvas.getContext("2d");
+      let W = 0, H = 0, raf = 0, running = false;
+      let ink = "#e9eaee", accent = "#93a1ff";
+      const t0 = performance.now();
+
+      // Seeded so the cloud looks the same on every visit.
+      let seed = 11;
+      const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      const gauss = () => Math.sqrt(-2 * Math.log(rnd() + 1e-9)) * Math.cos(6.2832 * rnd());
+
+      const centers = Array.from({ length: 7 }, () => {
+        const u = rnd() * 2 - 1, a = rnd() * 6.2832, r = 0.55 + rnd() * 0.3;
+        return [Math.sqrt(1 - u * u) * Math.cos(a) * r, u * r, Math.sqrt(1 - u * u) * Math.sin(a) * r];
+      });
+      const pts = [];
+      for (let i = 0; i < 560; i++) {
+        const c = centers[i % centers.length], s = i % 9 === 0 ? 0.38 : 0.12;
+        pts.push({ x: c[0] + gauss() * s, y: c[1] + gauss() * s, z: c[2] + gauss() * s, d: rnd() * 0.8 });
+      }
+      // Faint links to each point's two nearest neighbours turn clusters into little graphs.
+      // ponytail: O(n²) once at startup, fine for a few hundred points.
+      const edges = [];
+      pts.forEach((p, i) => {
+        pts
+          .map((q, j) => [j, (p.x - q.x) ** 2 + (p.y - q.y) ** 2 + (p.z - q.z) ** 2])
+          .filter(([j, d]) => j > i && d < 0.03)
+          .sort((a, b) => a[1] - b[1])
+          .slice(0, 2)
+          .forEach(([j]) => edges.push([p, pts[j]]));
+      });
+      // Two orbit rings around the cloud, to make the rotation read as 3D.
+      const rings = [0, 1].map((r) =>
+        Array.from({ length: 97 }, (_, k) => {
+          const a = (k / 96) * 6.2832, tilt = r ? 1.1 : 0.15;
+          return { x: Math.cos(a) * 1.1, y: Math.sin(a) * Math.sin(tilt) * 1.1, z: Math.sin(a) * Math.cos(tilt) * 1.1 };
+        })
+      );
+
+      // Rotation state: yaw/pitch with velocity, so drags coast to a stop.
+      let yaw = 0.6, pitch = -0.25, vYaw = 0, vPitch = 0, drag = null, tiltX = 0, tiltY = 0;
+      let query = null, lastPulse = pulse.current;
+
+      function readColors() {
+        const cs = getComputedStyle(canvas);
+        ink = cs.getPropertyValue("--stage-ink").trim() || ink;
+        accent = cs.getPropertyValue("--stage-accent").trim() || accent;
+      }
+
+      function size() {
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        const r = canvas.getBoundingClientRect();
+        W = r.width;
+        H = r.height;
+        canvas.width = Math.round(W * dpr);
+        canvas.height = Math.round(H * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function fireQuery(now) {
+        const c = centers[Math.floor(rnd() * centers.length)];
+        const q = { x: c[0] + gauss() * 0.3, y: c[1] + gauss() * 0.3, z: c[2] + gauss() * 0.3 };
+        const near = pts
+          .map((p) => [p, (p.x - q.x) ** 2 + (p.y - q.y) ** 2 + (p.z - q.z) ** 2])
+          .sort((a, b) => a[1] - b[1])
+          .slice(0, 10)
+          .map((e) => e[0]);
+        query = { q, near, born: now };
+      }
+
+      function draw(now) {
+        const t = reduceMotion ? 99 : (now - t0) / 1000;
+        const narrow = W < 700;
+        const cx = narrow ? W * 0.5 : W * 0.66;
+        const cy = narrow ? H * 0.32 : H * 0.5;
+        const R = Math.min(narrow ? W * 0.38 : W * 0.28, H * (narrow ? 0.26 : 0.36));
+        const grow = 1 - Math.pow(1 - Math.min(1, t / 2.2), 4); // cloud expands out of a point on load
+
+        if (!drag && !reduceMotion) {
+          yaw += vYaw + 0.0016;
+          pitch += vPitch;
+          vYaw *= 0.95;
+          vPitch *= 0.95;
+          pitch = Math.max(-1.1, Math.min(1.1, pitch));
+        }
+        const cyw = Math.cos(yaw + tiltX), syw = Math.sin(yaw + tiltX);
+        const cp = Math.cos(pitch + tiltY), sp = Math.sin(pitch + tiltY);
+        const cam = 3.2;
+        const project = (p) => {
+          const x1 = p.x * cyw - p.z * syw, z1 = p.x * syw + p.z * cyw;
+          const y2 = p.y * cp - z1 * sp, z2 = p.y * sp + z1 * cp;
+          const k = cam / (cam + z2);
+          return { sx: cx + x1 * R * k * grow, sy: cy + y2 * R * k * grow, z: z2, k };
+        };
+
+        ctx.clearRect(0, 0, W, H);
+
+        // Query: a pulse that fades over 2.6s, with lines to its neighbours.
+        let qp = null, qa = 0;
+        if (pulse.current !== lastPulse) {
+          lastPulse = pulse.current;
+          if (!reduceMotion) fireQuery(now);
+        }
+        if (query) {
+          const age = (now - query.born) / 1000;
+          qa = age < 0.4 ? age / 0.4 : Math.max(0, 1 - (age - 0.4) / 2.2);
+          if (age > 0.4 && qa <= 0) query = null;
+          else qp = project(query.q);
+        }
+
+        const proj = pts.map((p) => {
+          const pr = project(p);
+          pr.p = p;
+          p.pr = pr;
+          return pr;
+        });
+        proj.sort((a, b) => b.z - a.z);
+
+        const fade = Math.min(1, Math.max(0, (t - 0.8) / 1.5));
+        ctx.strokeStyle = ink;
+        ctx.lineWidth = 1;
+        for (const ring of rings) {
+          for (let k = 0; k < 96; k++) {
+            const a = project(ring[k]), b = project(ring[k + 1]);
+            ctx.globalAlpha = (0.04 + 0.14 * (1 - a.z / 1.1) / 2) * fade;
+            ctx.beginPath();
+            ctx.moveTo(a.sx, a.sy);
+            ctx.lineTo(b.sx, b.sy);
+            ctx.stroke();
+          }
+        }
+        for (const [a, b] of edges) {
+          ctx.globalAlpha = (0.05 + 0.2 * (1 - (a.pr.z + b.pr.z) / 2) / 2) * fade;
+          ctx.beginPath();
+          ctx.moveTo(a.pr.sx, a.pr.sy);
+          ctx.lineTo(b.pr.sx, b.pr.sy);
+          ctx.stroke();
+        }
+
+        if (qp) {
+          ctx.strokeStyle = accent;
+          ctx.lineWidth = 1;
+          for (const n of query.near) {
+            const np = project(n);
+            ctx.globalAlpha = qa * 0.9;
+            ctx.beginPath();
+            ctx.moveTo(qp.sx, qp.sy);
+            ctx.lineTo(np.sx, np.sy);
+            ctx.stroke();
+          }
+        }
+
+        const nearSet = query ? new Set(query.near) : null;
+        for (const pr of proj) {
+          const depth = (1 - pr.z) / 2; // ~0 far, ~1 near
+          const appear = Math.min(1, Math.max(0, (t - pr.p.d) / 1.2));
+          const hit = nearSet && nearSet.has(pr.p);
+          ctx.globalAlpha = (hit ? 0.4 + 0.6 * qa : 0.15 + 0.6 * depth) * appear;
+          ctx.fillStyle = hit ? accent : ink;
+          const r = (hit ? 2.2 : 0.7 + 1.5 * depth) * pr.k;
+          ctx.beginPath();
+          ctx.arc(pr.sx, pr.sy, r, 0, 6.2832);
+          ctx.fill();
+        }
+
+        if (qp) {
+          ctx.globalAlpha = qa;
+          ctx.fillStyle = accent;
+          ctx.beginPath();
+          ctx.arc(qp.sx, qp.sy, 5, 0, 6.2832);
+          ctx.fill();
+          ctx.globalAlpha = qa * 0.35;
+          ctx.strokeStyle = accent;
+          ctx.beginPath();
+          ctx.arc(qp.sx, qp.sy, 5 + 18 * (1 - qa), 0, 6.2832);
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      function loop(now) {
+        draw(now);
+        if (running) raf = requestAnimationFrame(loop);
+      }
+      function setRunning(v) {
+        if (reduceMotion || v === running) return;
+        running = v;
+        if (v) raf = requestAnimationFrame(loop);
+        else cancelAnimationFrame(raf);
+      }
+
+      const onDown = (e) => {
+        if (e.target.closest("a, button")) return;
+        drag = { x: e.clientX, y: e.clientY };
+        stage.setPointerCapture(e.pointerId);
+        stage.classList.add("is-dragging");
+      };
+      const onMove = (e) => {
+        if (drag) {
+          const dx = (e.clientX - drag.x) * 0.006, dy = (e.clientY - drag.y) * 0.006;
+          yaw += dx;
+          pitch = Math.max(-1.1, Math.min(1.1, pitch + dy));
+          vYaw = dx;
+          vPitch = dy;
+          drag = { x: e.clientX, y: e.clientY };
+        } else if (e.pointerType === "mouse") {
+          // Hover tilt: the cloud leans a little toward the pointer.
+          const r = stage.getBoundingClientRect();
+          tiltX = ((e.clientX - r.left) / r.width - 0.5) * 0.35;
+          tiltY = ((e.clientY - r.top) / r.height - 0.5) * 0.25;
+        }
+      };
+      const onUp = () => {
+        drag = null;
+        stage.classList.remove("is-dragging");
+      };
+      const onLeave = () => {
+        tiltX = tiltY = 0;
+      };
+
+      readColors();
+      size();
+      draw(performance.now());
+
+      const ro = new ResizeObserver(() => { size(); draw(performance.now()); });
+      ro.observe(canvas);
+      let onScreen = true;
+      const io = new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; setRunning(onScreen && !document.hidden); });
+      io.observe(canvas);
+      const mo = new MutationObserver(() => { readColors(); draw(performance.now()); });
+      mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+      const onVis = () => setRunning(onScreen && !document.hidden);
+      document.addEventListener("visibilitychange", onVis);
+      if (!reduceMotion) {
+        stage.addEventListener("pointerdown", onDown);
+        stage.addEventListener("pointermove", onMove);
+        stage.addEventListener("pointerup", onUp);
+        stage.addEventListener("pointercancel", onUp);
+        stage.addEventListener("pointerleave", onLeave);
+      }
+      return () => {
+        running = false;
+        cancelAnimationFrame(raf);
+        ro.disconnect();
+        io.disconnect();
+        mo.disconnect();
+        document.removeEventListener("visibilitychange", onVis);
+        stage.removeEventListener("pointerdown", onDown);
+        stage.removeEventListener("pointermove", onMove);
+        stage.removeEventListener("pointerup", onUp);
+        stage.removeEventListener("pointercancel", onUp);
+        stage.removeEventListener("pointerleave", onLeave);
+      };
+    }, []);
+    return h("canvas", { className: "field", ref, "aria-hidden": "true" });
+  }
+
+  // Types each phrase, holds it, deletes it, moves on. Bumps `pulse` on every
+  // new phrase so the field fires a query in step with the text.
+  function Typed({ pulse }) {
+    const [text, setText] = useState(reduceMotion ? phrases[0] : "");
+    useEffect(() => {
+      if (reduceMotion) return;
+      let i = 0, n = 0, deleting = false, timer = 0;
+      const step = () => {
+        const full = phrases[i];
+        if (!deleting) {
+          n++;
+          if (n === 1) pulse.current++;
+          setText(full.slice(0, n));
+          if (n === full.length) { deleting = true; timer = setTimeout(step, 2200); return; }
+          timer = setTimeout(step, 55);
+        } else {
+          n--;
+          setText(full.slice(0, n));
+          if (n === 0) { deleting = false; i = (i + 1) % phrases.length; timer = setTimeout(step, 350); return; }
+          timer = setTimeout(step, 28);
+        }
+      };
+      timer = setTimeout(step, 1500);
+      return () => clearTimeout(timer);
+    }, []);
+    return h("span", { className: "typed", "aria-hidden": "true" }, text, h("span", { className: "caret" }));
+  }
+
+  function Hero() {
+    const pulse = useRef(0);
+    const lastWord = (p) => p.replace(/\.$/, "");
+    const spoken = "I build AI that " + phrases.slice(0, -1).map(lastWord).join(", ") + " and " + phrases[phrases.length - 1];
     return h(
       "section",
       { id: "top", className: "hero" },
       h(
         "div",
-        { className: "hero-inner" },
+        { className: "stage" },
+        h(EmbeddingField, { pulse }),
         h(
           "div",
-          { className: "hero-copy" },
-          h(
-            "p",
-            { className: "hero-meta", "data-reveal": true },
-            h("span", null, profile.title),
-            h("span", { className: "meta-div", "aria-hidden": "true" }, "/"),
-            h("span", null, profile.location)
-          ),
+          { className: "stage-copy" },
+          h("p", { className: "stage-name" }, profile.name + ", AI/ML Research Officer"),
           h(
             "h1",
-            { className: "hero-name", "aria-label": profile.name },
-            profile.nameParts.map((part) =>
-              h("span", { key: part, className: "name-line", "data-reveal": true }, part)
-            )
-          ),
-          h("p", { className: "hero-intro", "data-reveal": true }, profile.intro),
-          h("p", { className: "hero-thesis", "data-reveal": true }, profile.thesis),
-          h(
-            "div",
-            { className: "hero-actions", "data-reveal": true },
-            h("a", { className: "btn btn-primary", href: "#work" }, "View work", h("span", { className: "btn-arw", "aria-hidden": "true" }, "→")),
-            h("a", { className: "btn btn-ghost", href: "#contact" }, "Start a brief")
+            { className: "statement", "aria-label": spoken },
+            h("span", { "data-reveal": "blur", "aria-hidden": "true" }, h(Words, { text: "I build AI that" })),
+            " ",
+            h(Typed, { pulse })
           )
         ),
-        h(EvalConsole, { theme })
+        h("p", { className: "stage-hint", "aria-hidden": "true" }, "Drag to turn")
+      ),
+      h(
+        "dl",
+        { className: "facts", "data-reveal": "rule" },
+        facts.map(([k, v], i) =>
+          h("div", { key: k, "data-reveal": "up", style: { "--d": 200 + i * 120 + "ms" } }, h("dt", null, k), h("dd", null, v))
+        )
       )
+    );
+  }
+
+  // Project cards are sticky: each one pins below the nav and the next slides up over it.
+  function Work() {
+    return h(
+      Section,
+      { id: "projects", title: ["Selected", "projects."], wide: true },
+      h(
+        "ol",
+        { className: "cards" },
+        projects.map((p, i) =>
+          h(
+            "li",
+            { key: p.id, id: p.id, className: "card", style: { "--n": i, "--tint": "var(--tint-" + (i + 1) + ")" } },
+            h(
+              "div",
+              { className: "card-main" },
+              h("span", { className: "card-n" }, "Project " + (i + 1)),
+              h("h3", { className: "card-title" }, p.title),
+              h("p", { className: "card-meta" }, p.type + ", " + p.year + ". " + p.status + "."),
+              h(
+                "dl",
+                { className: "card-body" },
+                h("div", null, h("dt", null, "Problem"), h("dd", null, p.problem)),
+                h("div", null, h("dt", null, "Method"), h("dd", null, p.method))
+              )
+            ),
+            h(
+              "dl",
+              { className: "card-side" },
+              h("div", null, h("dt", null, "What I check"), h("dd", null, p.checks)),
+              h("div", null, h("dt", null, "Built with"), h("dd", null, p.stack))
+            )
+          )
+        )
+      )
+    );
+  }
+
+  // Tinted full-width bands; each opens to show what the role involved.
+  function Experience() {
+    const [open, setOpen] = useState(0);
+    return h(
+      Section,
+      { id: "experience", title: ["Experience", "so far."], wide: true },
+      h(
+        "ol",
+        { className: "bands" },
+        experience.map((e, i) => {
+          const isOpen = open === i;
+          return h(
+            "li",
+            { key: e.role, className: isOpen ? "band is-open" : "band", style: { "--tint": "var(--tint-" + (i + 1) + ")" } },
+            h(
+              "h3",
+              null,
+              h(
+                "button",
+                {
+                  type: "button",
+                  className: "band-row",
+                  "aria-expanded": isOpen,
+                  "aria-controls": "band-" + i,
+                  onClick: () => setOpen(isOpen ? -1 : i),
+                },
+                h("span", { className: "band-n" }, String(i + 1).padStart(2, "0")),
+                h("span", { className: "band-role" }, e.role),
+                h("span", { className: "band-org" }, e.org),
+                h("span", { className: "band-date" }, e.date),
+                h("span", { className: "band-toggle", "aria-hidden": "true" })
+              )
+            ),
+            h(
+              "div",
+              { className: "band-panel", id: "band-" + i, role: "region", "aria-label": e.role, inert: isOpen ? undefined : "" },
+              h("div", null, h("p", null, e.body))
+            )
+          );
+        })
+      )
+    );
+  }
+
+  // Certifications and publications share one row layout: title, detail line, year, optional link.
+  function Entries({ items }) {
+    return h(
+      "ol",
+      { className: "entries" },
+      items.map((it, i) =>
+        h(
+          "li",
+          { key: it.title, className: "entry", "data-reveal": "up", style: { "--d": (i % 4) * 90 + "ms" } },
+          h(
+            "div",
+            null,
+            h("h3", { className: "entry-title" }, it.url ? h("a", { href: it.url, target: "_blank", rel: "noreferrer" }, it.title) : it.title),
+            h("p", { className: "entry-detail" }, it.detail)
+          ),
+          h("span", { className: "entry-year" }, it.year)
+        )
+      )
+    );
+  }
+
+  function Certifications() {
+    if (!certifications.length) return null;
+    return h(
+      Section,
+      { id: "certifications", title: ["Certified", "along the way."] },
+      h(Entries, { items: certifications.map((c) => ({ title: c.name, detail: c.issuer, year: c.year, url: c.url })) })
+    );
+  }
+
+  function Publications() {
+    if (!publications.length) return null;
+    return h(
+      Section,
+      { id: "publications", title: ["Published", "research."] },
+      h(Entries, { items: publications.map((p) => ({ title: p.title, detail: (p.authors ? p.authors.replace(/\.$/, "") + ". " : "") + p.venue + ".", year: p.year, url: p.url })) })
+    );
+  }
+
+  function Interests() {
+    if (!interests.length) return null;
+    return h(
+      Section,
+      { id: "interests", title: ["Currently", "exploring."] },
+      h("ul", { className: "interests", "data-reveal": "up" }, interests.map((x) => h("li", { key: x }, x)))
+    );
+  }
+
+  function Capabilities() {
+    return h(
+      Section,
+      { id: "capabilities", title: ["What I", "work with."] },
+      h(
+        "dl",
+        { className: "capabilities" },
+        capabilities.map(([k, v], i) =>
+          h("div", { key: k, "data-reveal": "up", style: { "--d": (i % 2) * 120 + "ms" } }, h("dt", null, k), h("dd", null, v))
+        )
+      ),
+      h("p", { className: "stack", "data-reveal": "up" }, h("span", null, "Tools I use day to day: "), stack, ".")
+    );
+  }
+
+  function Contact() {
+    return h(
+      Section,
+      { id: "contact", title: ["Bring a problem,", "a dataset and a metric."] },
+      h(
+        "p",
+        { className: "contact-copy", "data-reveal": "up" },
+        "The best AI projects start with constraints, a baseline and a way to tell whether the model helped. Message me on LinkedIn or see the code on GitHub."
+      ),
+      h(
+        "ul",
+        { className: "links", "data-reveal": "up", style: { "--d": "120ms" } },
+        profile.links.map(([label, href]) =>
+          h("li", { key: label }, h("a", { href, target: "_blank", rel: "noreferrer" }, label))
+        )
+      )
+    );
+  }
+
+  // Gives every split word its order (--i) and line (--l), then adds .in as elements enter the viewport.
+  function useReveals() {
+    useEffect(() => {
+      const nodes = Array.from(document.querySelectorAll("[data-reveal]"));
+      nodes.forEach((el) => {
+        let line = -1, top = null;
+        el.querySelectorAll(".w").forEach((w, i) => {
+          if (w.offsetTop !== top) { top = w.offsetTop; line++; }
+          w.style.setProperty("--i", i);
+          w.style.setProperty("--l", line);
+        });
+      });
+      if (reduceMotion) return;
+      const io = new IntersectionObserver(
+        (entries) => entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+        }),
+        { rootMargin: "0px 0px -8% 0px" }
+      );
+      nodes.forEach((n) => io.observe(n));
+      return () => io.disconnect();
+    }, []);
+  }
+
+  // Eased wheel scrolling, like Lenis on the reference site, without the dependency.
+  // Moves the real scroll position (so sticky, observers and anchors keep working),
+  // only for mouse wheels; touch, keyboard and scrollbar stay native.
+  function useSmoothScroll() {
+    useEffect(() => {
+      if (reduceMotion || !window.matchMedia("(pointer: fine)").matches) return;
+      const maxY = () => document.documentElement.scrollHeight - window.innerHeight;
+      let target = window.scrollY, current = target, raf = 0, last = 0;
+
+      function tick(now) {
+        const dt = Math.min(0.05, (now - last) / 1000 || 0.016);
+        last = now;
+        current += (target - current) * (1 - Math.exp(-dt * 9));
+        if (Math.abs(target - current) < 0.5) current = target;
+        window.scrollTo({ top: current, behavior: "instant" });
+        raf = current === target ? 0 : requestAnimationFrame(tick);
+      }
+      function scrollToY(y) {
+        target = Math.max(0, Math.min(maxY(), y));
+        if (!raf) {
+          current = window.scrollY;
+          last = performance.now();
+          raf = requestAnimationFrame(tick);
+        }
+      }
+      function onWheel(e) {
+        if (e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+        e.preventDefault();
+        const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1;
+        scrollToY((raf ? target : window.scrollY) + e.deltaY * unit);
+      }
+      // Keyboard, scrollbar or find-in-page moved the page: adopt that position.
+      function onScroll() {
+        if (!raf) target = current = window.scrollY;
+      }
+      function onClick(e) {
+        const a = e.target.closest && e.target.closest('a[href^="#"]');
+        if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+        const id = a.getAttribute("href").slice(1);
+        const el = id ? document.getElementById(id) : null;
+        if (!el) return;
+        e.preventDefault();
+        history.pushState(null, "", "#" + id);
+        if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
+        el.focus({ preventScroll: true });
+        const offset = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+        scrollToY(id === "top" ? 0 : el.getBoundingClientRect().top + window.scrollY - offset);
+      }
+
+      window.addEventListener("wheel", onWheel, { passive: false });
+      window.addEventListener("scroll", onScroll, { passive: true });
+      document.addEventListener("click", onClick);
+      return () => {
+        cancelAnimationFrame(raf);
+        window.removeEventListener("wheel", onWheel);
+        window.removeEventListener("scroll", onScroll);
+        document.removeEventListener("click", onClick);
+      };
+    }, []);
+  }
+
+  function App() {
+    useReveals();
+    useSmoothScroll();
+    return h(
+      React.Fragment,
+      null,
+      h(TopBar),
+      h("main", null, h(Hero), h(Experience), h(Certifications), h(Publications), h(Work), h(Interests), h(Capabilities), h(Contact)),
+      h("footer", { className: "footer" }, h("span", null, "© 2026 " + profile.name), h("a", { href: "#top" }, "Back to top"))
     );
   }
 

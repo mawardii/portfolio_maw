@@ -32,3 +32,6 @@ __pycache__/
 Thumbs.db
 .vscode/
 .idea/
+
+# Certificate PDFs (source for the Certifications section, kept private)
+cert/
