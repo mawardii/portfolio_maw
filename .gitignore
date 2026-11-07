@@ -35,3 +35,10 @@ Thumbs.db
 
 # Certificate PDFs (source for the Certifications section, kept private)
 cert/
+
+# CV (source for the Experience and About sections; has a personal email)
+docs/cv.pdf
+docs/pic.jpg
+
+# Wrangler local state (account info)
+.wrangler/
