@@ -1,5 +1,5 @@
 // Relays the portfolio's contact form to Telegram, so the bot token never reaches the browser.
-// Secrets (wrangler secret put): BOT_TOKEN, CHAT_ID. Var (wrangler.toml): ALLOWED_ORIGINS.
+// Secrets (wrangler secret put): BOT_TOKEN, CHAT_ID. Var (wrangler.toml): ALLOWED_ORIGINS. Binding: LIMITER.
 export default {
   async fetch(req, env) {
     const origin = req.headers.get("Origin") || "";
@@ -13,6 +13,9 @@ export default {
     if (!allowed) return reply(403, { error: "origin" });
     if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
     if (req.method !== "POST") return reply(405, { error: "method" });
+    // ponytail: per-IP, per-minute only (binding periods are 10s or 60s); a slow drip of 3/min still gets through.
+    const ip = req.headers.get("CF-Connecting-IP") || "unknown";
+    if (env.LIMITER && !(await env.LIMITER.limit({ key: ip })).success) return reply(429, { error: "rate" });
 
     let d;
     try {
@@ -27,7 +30,6 @@ export default {
       return reply(400, { error: "fields" });
     }
 
-    // ponytail: no rate limit; add a Workers rate-limiting binding if spam gets past the honeypot.
     // Plain text (no parse_mode), so whatever a visitor types can't inject Telegram formatting.
     const text = `Portfolio message\nFrom: ${name}\nReply to: ${contact}\n\n${message}`;
     const tg = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`, {

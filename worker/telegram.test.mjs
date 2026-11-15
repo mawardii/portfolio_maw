@@ -30,6 +30,14 @@ assert.equal((await post(JSON.stringify({ name: "A", contact: "c", message: "x".
 assert.equal((await post(JSON.stringify({ name: "A", contact: "c", message: "m", website: "spam.test" }))).status, 200);
 assert.equal(sent.length, 0, "rejected and honeypot requests must not reach Telegram");
 
+const hits = {};
+env.LIMITER = { limit: async ({ key }) => ({ success: (hits[key] = (hits[key] || 0) + 1) <= 3 }) };
+sent = [];
+for (let i = 0; i < 3; i++) assert.equal((await post(ok)).status, 200);
+assert.equal((await post(ok)).status, 429);
+assert.equal(sent.length, 3, "rate-limited request must not reach Telegram");
+delete env.LIMITER;
+
 globalThis.fetch = async () => new Response("{}", { status: 401 });
 assert.equal((await post(ok)).status, 502);
 

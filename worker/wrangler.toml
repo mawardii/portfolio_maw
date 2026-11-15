@@ -5,3 +5,9 @@ compatibility_date = "2026-10-01"
 [vars]
 # Exact origins (scheme + host, no path) allowed to post. Add your live site's origin here.
 ALLOWED_ORIGINS = "https://mawardii.dev,https://www.mawardii.dev,https://mawardii.github.io,http://127.0.0.1:5173"
+
+# 3 messages per minute per visitor IP.
+[[ratelimits]]
+name = "LIMITER"
+namespace_id = "1001"
+simple = { limit = 3, period = 60 }
